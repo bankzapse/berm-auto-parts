@@ -34,6 +34,7 @@ export default async function EditDocumentPage({ params }: { params: Promise<{ i
     note: doc.note,
     paymentMethod: doc.paymentMethod,
     paidAmount: doc.paidAmount,
+    stockDeducted: doc.stockDeducted,
     discount: doc.discount,
     vatRate: doc.vatRate,
     items: doc.items.map((it) => ({

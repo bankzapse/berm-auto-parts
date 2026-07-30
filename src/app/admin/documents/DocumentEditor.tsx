@@ -46,6 +46,7 @@ export type DocData = {
   paidAmount: number;
   discount: number;
   vatRate: number;
+  stockDeducted?: boolean;
   items: Item[];
 };
 
@@ -145,11 +146,17 @@ export default function DocumentEditor({
         <div className="card grid gap-4 p-5 sm:grid-cols-3">
           <label>
             <span className="label">ประเภทเอกสาร</span>
-            <select className="input" value={d.type} onChange={(e) => set('type', e.target.value as DocTypeKey)}>
+            <select
+              className="input disabled:bg-neutral-100 disabled:text-neutral-500"
+              value={d.type}
+              onChange={(e) => set('type', e.target.value as DocTypeKey)}
+              disabled={mode === 'edit'}
+            >
               {DOC_TYPES.map((t) => (
                 <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
+            {mode === 'edit' ? <span className="mt-1 block text-xs text-neutral-400">เปลี่ยนประเภทหลังออกเลขที่ไม่ได้</span> : null}
           </label>
           <label>
             <span className="label">สถานะ</span>
@@ -194,6 +201,12 @@ export default function DocumentEditor({
         {/* รายการสินค้า */}
         <div className="card p-5">
           <h2 className="mb-3 font-bold text-brand-800">รายการสินค้า</h2>
+
+          {d.stockDeducted ? (
+            <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+              🔒 เอกสารนี้<strong>ตัดสต็อกไปแล้ว</strong> — แก้รายการสินค้า/ราคาไม่ได้ (บันทึกได้เฉพาะข้อมูลหัว/การชำระ) เพื่อกันสต็อกเพี้ยน
+            </div>
+          ) : null}
 
           <div className="relative mb-3">
             <input

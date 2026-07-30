@@ -89,9 +89,19 @@ export async function DELETE(_req: NextRequest, ctx: { params: Promise<{ id: str
   if (!(await isAuthed())) return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   const { id } = await ctx.params;
   try {
+    const po = await prisma.purchaseOrder.findUnique({ where: { id }, select: { received: true } });
+    if (!po) return NextResponse.json({ ok: false, error: 'ไม่พบใบสั่งซื้อ' }, { status: 404 });
+    // รับของแล้วห้ามลบ (กันสต็อกที่เพิ่มไปค้างโดยไม่มีเอกสารอ้างอิง)
+    if (po.received) {
+      return NextResponse.json(
+        { ok: false, error: 'ใบสั่งซื้อนี้รับของเข้าสต็อกแล้ว ลบไม่ได้ — ถ้าต้องแก้สต็อกให้ปรับที่หน้าจัดการสต็อก' },
+        { status: 400 },
+      );
+    }
     await prisma.purchaseOrder.delete({ where: { id } });
     return NextResponse.json({ ok: true });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'ลบไม่สำเร็จ' }, { status: 500 });
+    console.error('delete PO failed:', e);
+    return NextResponse.json({ ok: false, error: 'ลบไม่สำเร็จ' }, { status: 500 });
   }
 }

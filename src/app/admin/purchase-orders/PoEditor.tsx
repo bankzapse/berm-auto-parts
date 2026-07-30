@@ -20,10 +20,10 @@ export type PoData = {
   items: Item[];
 };
 
+// RECEIVED ตั้งโดยระบบเท่านั้น (ตอนกดรับของ) ไม่ให้ผู้ใช้เลือกเอง
 const STATUSES = [
   { value: 'DRAFT', label: 'ร่าง' },
   { value: 'ORDERED', label: 'สั่งแล้ว' },
-  { value: 'RECEIVED', label: 'รับของแล้ว' },
   { value: 'CANCELLED', label: 'ยกเลิก' },
 ];
 
@@ -125,8 +125,12 @@ export default function PoEditor({
         </label>
         <label>
           <span className="label">สถานะ</span>
-          <select className="input" value={d.status} onChange={(e) => set('status', e.target.value)}>
-            {STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          <select className="input" value={d.status} onChange={(e) => set('status', e.target.value)} disabled={d.received}>
+            {d.received ? (
+              <option value="RECEIVED">รับของแล้ว</option>
+            ) : (
+              STATUSES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)
+            )}
           </select>
         </label>
         <label>

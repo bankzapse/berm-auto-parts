@@ -9,6 +9,16 @@ export interface CrudConfig {
   fields: Record<string, FieldType>;
   orderBy?: Record<string, 'asc' | 'desc'> | Record<string, 'asc' | 'desc'>[];
   include?: Record<string, unknown>;
+  privateRead?: boolean; // true = การอ่าน (GET) ต้องล็อกอิน (ข้อมูลลูกค้า/ซัพพลายเออร์)
+}
+
+// แปลง error ของ Prisma เป็นข้อความไทยที่เข้าใจง่าย
+function friendlyError(e: unknown): string {
+  const code = typeof e === 'object' && e !== null && 'code' in e ? (e as { code?: string }).code : '';
+  if (code === 'P2002') return 'ข้อมูลซ้ำ (เช่น slug/รหัสถูกใช้ไปแล้ว)';
+  if (code === 'P2003' || code === 'P2014') return 'ลบไม่ได้ เพราะมีข้อมูลอื่นอ้างอิงอยู่ (เช่น ประวัติสต็อก/เอกสาร)';
+  if (code === 'P2025') return 'ไม่พบรายการที่ต้องการ (อาจถูกลบไปแล้ว)';
+  return 'ทำรายการไม่สำเร็จ';
 }
 
 function coerce(value: unknown, type: FieldType): unknown {
@@ -49,6 +59,10 @@ function delegate(model: string): any {
 
 export function makeCollectionHandlers(cfg: CrudConfig) {
   async function GET() {
+    // ข้อมูลลูกค้า/ซัพพลายเออร์ต้องล็อกอินก่อนอ่าน (กัน PII รั่ว)
+    if (cfg.privateRead && !(await isAuthed())) {
+      return NextResponse.json({ ok: false, error: 'unauthorized', items: [] }, { status: 401 });
+    }
     try {
       const items = await delegate(cfg.model).findMany({
         orderBy: cfg.orderBy ?? { createdAt: 'desc' },
@@ -78,10 +92,7 @@ export function makeCollectionHandlers(cfg: CrudConfig) {
       const item = await delegate(cfg.model).create({ data });
       return NextResponse.json({ ok: true, item });
     } catch (e) {
-      return NextResponse.json(
-        { ok: false, error: e instanceof Error ? e.message : 'create failed' },
-        { status: 500 },
-      );
+      return NextResponse.json({ ok: false, error: friendlyError(e) }, { status: 400 });
     }
   }
 
@@ -105,10 +116,7 @@ export function makeItemHandlers(cfg: CrudConfig) {
       const item = await delegate(cfg.model).update({ where: { id }, data });
       return NextResponse.json({ ok: true, item });
     } catch (e) {
-      return NextResponse.json(
-        { ok: false, error: e instanceof Error ? e.message : 'update failed' },
-        { status: 500 },
-      );
+      return NextResponse.json({ ok: false, error: friendlyError(e) }, { status: 400 });
     }
   }
 
@@ -121,10 +129,7 @@ export function makeItemHandlers(cfg: CrudConfig) {
       await delegate(cfg.model).delete({ where: { id } });
       return NextResponse.json({ ok: true });
     } catch (e) {
-      return NextResponse.json(
-        { ok: false, error: e instanceof Error ? e.message : 'delete failed' },
-        { status: 500 },
-      );
+      return NextResponse.json({ ok: false, error: friendlyError(e) }, { status: 400 });
     }
   }
 

@@ -30,9 +30,14 @@ export async function POST(req: NextRequest) {
   if (!productId || !['IN', 'OUT', 'ADJUST'].includes(type)) {
     return NextResponse.json({ ok: false, error: 'ข้อมูลไม่ครบ' }, { status: 400 });
   }
-  // กันค่าที่ไม่ใช่จำนวนจริง (NaN/Infinity/ติดลบ/ใหญ่เกิน)
-  if (!Number.isFinite(qtyRaw) || qtyRaw < 0 || qtyRaw > 1_000_000) {
-    return NextResponse.json({ ok: false, error: 'จำนวนไม่ถูกต้อง' }, { status: 400 });
+  // กันค่าที่ไม่ใช่จำนวนจริง (NaN/Infinity/ติดลบ/ใหญ่เกิน) — รับเข้า/ตัดออกต้อง >= 1
+  if (
+    !Number.isFinite(qtyRaw) ||
+    qtyRaw < 0 ||
+    qtyRaw > 1_000_000 ||
+    ((type === 'IN' || type === 'OUT') && qtyRaw < 1)
+  ) {
+    return NextResponse.json({ ok: false, error: 'จำนวนไม่ถูกต้อง (ต้องมากกว่า 0)' }, { status: 400 });
   }
   if (unitCost != null && (!Number.isFinite(unitCost) || unitCost < 0)) {
     return NextResponse.json({ ok: false, error: 'ต้นทุนไม่ถูกต้อง' }, { status: 400 });

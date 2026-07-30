@@ -64,6 +64,7 @@ export const teamConfig: CrudConfig = {
 
 export const supplierConfig: CrudConfig = {
   model: 'supplier',
+  privateRead: true,
   fields: {
     name: 'string',
     contact: 'string',
@@ -77,6 +78,7 @@ export const supplierConfig: CrudConfig = {
 
 export const customerConfig: CrudConfig = {
   model: 'customer',
+  privateRead: true,
   fields: {
     name: 'string',
     phone: 'string',

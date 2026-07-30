@@ -15,7 +15,7 @@ const NAV = [
   { id: 'seo', icon: '🔍', title: 'SEO' },
 ];
 
-export default function SettingsForm({ initial }: { initial: Settings }) {
+export default function SettingsForm({ initial, dbOk = true }: { initial: Settings; dbOk?: boolean }) {
   const [f, setF] = useState<Settings>(initial);
   const [state, setState] = useState<SaveState>('idle');
   const [error, setError] = useState('');
@@ -81,6 +81,16 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
           </div>
         </div>
       </header>
+
+      {!dbOk && (
+        <div className="mb-6 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
+          🔴 <strong>ต่อฐานข้อมูลไม่ได้</strong> — ข้อมูลที่เห็นเป็นค่าเริ่มต้น และจะ<strong>บันทึกไม่ได้</strong>
+          <div className="mt-1 text-red-700">
+            แก้: เข้า Supabase → ถ้า Project ถูก pause ให้กด Resume • ตรวจ <code>DATABASE_URL</code> บน Vercel ให้มี{' '}
+            <code>?pgbouncer=true&amp;connection_limit=1</code> ต่อท้าย แล้ว Redeploy
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[190px_1fr]">
         {/* เมนูลัดแต่ละส่วน (เดสก์ท็อป) */}

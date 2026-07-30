@@ -20,17 +20,24 @@ export async function GET() {
   }
 }
 
-// สร้างเลขที่เอกสารภายใน transaction (ใช้ tx เพื่อความสอดคล้อง)
+// สร้างเลขที่เอกสาร: ใช้เลขต่อจากตัวสูงสุดของเดือน (ไม่ใช่ count) — กันเลขชนหลังลบเอกสาร
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function nextDocNumber(tx: any, type: DocTypeKey): Promise<string> {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
   const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const count = await tx.document.count({ where: { type, createdAt: { gte: start, lt: end } } });
-  const seq = String(count + 1).padStart(3, '0');
-  return `${docPrefix(type)}${yy}${mm}-${seq}`;
+  const prefix = `${docPrefix(type)}${yy}${mm}-`;
+  const latest = await tx.document.findFirst({
+    where: { type, docNumber: { startsWith: prefix } },
+    orderBy: { docNumber: 'desc' },
+    select: { docNumber: true },
+  });
+  let seq = 1;
+  if (latest) {
+    const n = parseInt(String(latest.docNumber).slice(prefix.length), 10);
+    if (Number.isFinite(n)) seq = n + 1;
+  }
+  return `${prefix}${String(seq).padStart(3, '0')}`;
 }
 
 function isUniqueError(e: unknown): boolean {

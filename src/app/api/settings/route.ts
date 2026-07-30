@@ -28,7 +28,9 @@ export async function PUT(req: NextRequest) {
   for (const key of ALLOWED) {
     if (key in body) {
       if (key === 'latitude' || key === 'longitude') {
-        const n = Number(body[key]);
+        const raw = String(body[key] ?? '').trim();
+        if (raw === '') continue; // เว้นว่าง = ไม่แตะค่าเดิม (ไม่เซฟเป็น 0)
+        const n = Number(raw);
         if (!Number.isNaN(n)) data[key] = n;
       } else {
         data[key] = String(body[key] ?? '');

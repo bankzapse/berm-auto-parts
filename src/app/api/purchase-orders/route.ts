@@ -35,15 +35,24 @@ export async function GET() {
   }
 }
 
+// ใช้เลขต่อจากตัวสูงสุดของเดือน (ไม่ใช่ count) — กันเลขชนหลังลบเอกสาร
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function nextPoNumber(tx: any): Promise<string> {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
   const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const count = await tx.purchaseOrder.count({ where: { createdAt: { gte: start, lt: end } } });
-  return `PO${yy}${mm}-${String(count + 1).padStart(3, '0')}`;
+  const prefix = `PO${yy}${mm}-`;
+  const latest = await tx.purchaseOrder.findFirst({
+    where: { poNumber: { startsWith: prefix } },
+    orderBy: { poNumber: 'desc' },
+    select: { poNumber: true },
+  });
+  let seq = 1;
+  if (latest) {
+    const n = parseInt(String(latest.poNumber).slice(prefix.length), 10);
+    if (Number.isFinite(n)) seq = n + 1;
+  }
+  return `${prefix}${String(seq).padStart(3, '0')}`;
 }
 
 function isUniqueError(e: unknown): boolean {

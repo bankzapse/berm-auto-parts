@@ -4,6 +4,9 @@ import CallBar from '@/components/CallBar';
 import TopBar from '@/components/TopBar';
 import { getSettings } from '@/lib/data';
 
+// อ่านข้อมูลสดจาก DB ทุกครั้ง — แก้ใน admin แล้วขึ้นหน้าเว็บทันที (ไม่ต้อง redeploy)
+export const dynamic = 'force-dynamic';
+
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const s = await getSettings();
   return (
