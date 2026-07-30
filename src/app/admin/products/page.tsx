@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getAllProducts, getCategories } from '@/lib/data';
 import CollectionManager, { type FieldDef } from '@/components/admin/CollectionManager';
 
@@ -50,8 +51,13 @@ export default async function AdminProductsPage() {
 
   return (
     <div>
-      <h1 className="mb-1 text-2xl font-bold text-neutral-800">สินค้า / อะไหล่</h1>
-      <p className="mb-6 text-neutral-500">เพิ่ม แก้ไข ลบ สินค้า พร้อมราคาและหมวด</p>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="mb-1 text-2xl font-bold text-neutral-800">สินค้า / อะไหล่</h1>
+          <p className="text-neutral-500">เพิ่ม แก้ไข ลบ สินค้า พร้อมราคาและหมวด</p>
+        </div>
+        <Link href="/admin/products/import" className="btn-outline">นำเข้าจำนวนมาก (CSV/วางตาราง)</Link>
+      </div>
       <CollectionManager
         endpoint="/api/products"
         items={products.map((it) => ({

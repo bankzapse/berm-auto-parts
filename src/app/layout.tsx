@@ -25,7 +25,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          // escape '<' กัน </script> breakout (stored XSS จากค่าในตั้งค่า)
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
         {children}
       </body>
