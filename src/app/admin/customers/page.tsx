@@ -36,21 +36,15 @@ export default async function CustomersPage() {
   const defaults = { name: '', phone: '', address: '', taxId: '', note: '' };
 
   return (
-    <div>
-      <h1 className="mb-1 text-2xl font-bold text-neutral-800">ลูกค้า / ค้างชำระ</h1>
-      <p className="mb-6 text-neutral-500">ทะเบียนลูกค้า และยอดค้างชำระจากใบวางบิล</p>
+    <div><h1 className="mb-1 text-2xl font-bold text-neutral-800">ลูกค้า / ค้างชำระ</h1><p className="mb-6 text-neutral-500">ทะเบียนลูกค้า และยอดค้างชำระจากใบวางบิล</p>
 
       {/* ค้างชำระ */}
-      <section className="mb-8">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-neutral-800">ยอดค้างชำระ</h2>
-          <span className="rounded-lg bg-red-50 px-3 py-1 font-bold text-red-700">
+      <section className="mb-8"><div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-bold text-neutral-800">ยอดค้างชำระ</h2><span className="rounded-lg bg-red-50 px-3 py-1 font-bold text-red-700">
             รวม ฿{formatBaht(totalOwed)}
-          </span>
-        </div>
+          </span></div>
         {owed.length === 0 ? (
           <p className="rounded-xl border border-dashed border-neutral-300 p-6 text-center text-neutral-500">
-            ไม่มียอดค้างชำระ 🎉
+            ไม่มียอดค้างชำระ 
           </p>
         ) : (
           <div className="card divide-y divide-neutral-100">
@@ -59,32 +53,18 @@ export default async function CustomersPage() {
                 key={d.id}
                 href={`/admin/documents/${d.id}`}
                 className="flex items-center gap-3 p-3 text-sm hover:bg-neutral-50"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="font-semibold text-brand-800">{d.docNumber}</div>
-                  <div className="truncate text-neutral-500">{d.customerName || 'ไม่ระบุลูกค้า'}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-red-600">ค้าง ฿{formatBaht(d.remain)}</div>
-                  <div className="text-xs text-neutral-400">
+              ><div className="min-w-0 flex-1"><div className="font-semibold text-brand-800">{d.docNumber}</div><div className="truncate text-neutral-500">{d.customerName || 'ไม่ระบุลูกค้า'}</div></div><div className="text-right"><div className="font-bold text-red-600">ค้าง ฿{formatBaht(d.remain)}</div><div className="text-xs text-neutral-400">
                     ยอด ฿{formatBaht(d.total)} • จ่ายแล้ว ฿{formatBaht(d.paidAmount)}
-                  </div>
-                </div>
-              </Link>
+                  </div></div></Link>
             ))}
           </div>
         )}
-      </section>
-
-      <h2 className="mb-3 text-lg font-bold text-neutral-800">ทะเบียนลูกค้า</h2>
-      <CollectionManager
+      </section><h2 className="mb-3 text-lg font-bold text-neutral-800">ทะเบียนลูกค้า</h2><CollectionManager
         endpoint="/api/customers"
         items={customers.map((it) => ({ ...it, __subtitle: it.phone || it.address || '' }))}
         fields={fields}
         defaults={defaults}
         titleKey="name"
         addLabel="เพิ่มลูกค้า"
-      />
-    </div>
-  );
+      /></div> );
 }

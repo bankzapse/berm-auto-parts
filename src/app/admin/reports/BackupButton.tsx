@@ -29,7 +29,6 @@ export default function BackupButton() {
 
   return (
     <button onClick={backup} disabled={busy} className="btn-outline disabled:opacity-70">
-      {busy ? <><Spinner className="h-4 w-4" /> กำลังสำรอง…</> : '💾 สำรองข้อมูล (JSON)'}
-    </button>
-  );
+      {busy ? <><Spinner className="h-4 w-4" /> กำลังสำรอง…</> : ' สำรองข้อมูล (JSON)'}
+    </button> );
 }

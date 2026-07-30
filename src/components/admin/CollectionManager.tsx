@@ -94,12 +94,9 @@ export default function CollectionManager({
     setEditing((prev) => (prev ? { ...prev, [key]: value } : prev));
 
   return (
-    <div>
-      <div className="mb-4 flex justify-end">
-        <button onClick={startAdd} className="btn-primary">
-          ➕ {addLabel}
-        </button>
-      </div>
+    <div><div className="mb-4 flex justify-end"><button onClick={startAdd} className="btn-primary">
+           {addLabel}
+        </button></div>
 
       {items.length === 0 ? (
         <p className="rounded-xl border border-dashed border-neutral-300 p-8 text-center text-neutral-500">
@@ -117,49 +114,38 @@ export default function CollectionManager({
                 />
               ) : (
                 <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-2xl">
-                  {item[imageKey] || '📄'}
+                  {item[imageKey] || ''}
                 </div>
               )}
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-medium text-neutral-800">
+              <div className="min-w-0 flex-1"><div className="truncate font-medium text-neutral-800">
                   {item[titleKey] || '(ไม่มีชื่อ)'}
                 </div>
                 {item.__subtitle ? (
                   <div className="truncate text-sm text-neutral-500">{item.__subtitle}</div>
                 ) : null}
-              </div>
-              <button onClick={() => startEdit(item)} className="rounded-lg px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">
+              </div><button onClick={() => startEdit(item)} className="rounded-lg px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">
                 แก้ไข
-              </button>
-              <button
+              </button><button
                 onClick={() => remove(item)}
                 disabled={deletingId === item.id}
                 className="rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
               >
                 {deletingId === item.id ? <Spinner className="h-4 w-4" /> : 'ลบ'}
-              </button>
-            </li>
+              </button></li>
           ))}
         </ul>
       )}
 
       {/* ฟอร์มแก้ไข/เพิ่ม (modal) */}
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4">
-          <form
+        <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4"><form
             onSubmit={save}
             className="my-8 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-xl"
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-brand-800">
+          ><div className="mb-4 flex items-center justify-between"><h2 className="text-lg font-bold text-brand-800">
                 {editing.id ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่'}
-              </h2>
-              <button type="button" onClick={() => setEditing(null)} className="text-neutral-400 hover:text-neutral-700">
+              </h2><button type="button" onClick={() => setEditing(null)} className="text-neutral-400 hover:text-neutral-700">
                 ✕
-              </button>
-            </div>
-
-            <div className="grid gap-4 sm:grid-cols-2">
+              </button></div><div className="grid gap-4 sm:grid-cols-2">
               {fields.map((fd) => (
                 <div key={fd.key} className={fd.colSpan === 2 || fd.type === 'image' || fd.type === 'textarea' ? 'sm:col-span-2' : ''}>
                   {renderInput(fd, editing[fd.key], (v) => setVal(fd.key, v))}
@@ -169,17 +155,11 @@ export default function CollectionManager({
 
             {error && <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
-            <div className="mt-6 flex items-center justify-end gap-3">
-              <button type="button" onClick={() => setEditing(null)} className="btn-outline">
+            <div className="mt-6 flex items-center justify-end gap-3"><button type="button" onClick={() => setEditing(null)} className="btn-outline">
                 ยกเลิก
-              </button>
-              <SaveButton state={state} />
-            </div>
-          </form>
-        </div>
+              </button><SaveButton state={state} /></div></form></div>
       )}
-    </div>
-  );
+    </div> );
 }
 
 function renderInput(fd: FieldDef, value: unknown, onChange: (v: unknown) => void) {
@@ -188,63 +168,51 @@ function renderInput(fd: FieldDef, value: unknown, onChange: (v: unknown) => voi
       return <ImageUploader label={fd.label} value={(value as string) || ''} onChange={onChange} />;
     case 'textarea':
       return (
-        <Field label={fd.label} hint={fd.hint}>
-          <textarea
+        <Field label={fd.label} hint={fd.hint}><textarea
             className="input min-h-24"
             value={(value as string) || ''}
             placeholder={fd.placeholder}
             onChange={(e) => onChange(e.target.value)}
-          />
-        </Field>
+          /></Field>
       );
     case 'boolean':
       return (
-        <label className="flex items-center gap-2 pt-6">
-          <input
+        <label className="flex items-center gap-2 pt-6"><input
             type="checkbox"
             className="h-5 w-5 rounded border-neutral-300"
             checked={!!value}
             onChange={(e) => onChange(e.target.checked)}
-          />
-          <span className="text-sm font-medium text-neutral-700">{fd.label}</span>
-        </label>
+          /><span className="text-sm font-medium text-neutral-700">{fd.label}</span></label>
       );
     case 'select':
       return (
-        <Field label={fd.label} hint={fd.hint}>
-          <select className="input" value={(value as string) || ''} onChange={(e) => onChange(e.target.value)}>
-            <option value="">— ไม่ระบุ —</option>
+        <Field label={fd.label} hint={fd.hint}><select className="input" value={(value as string) || ''} onChange={(e) => onChange(e.target.value)}><option value="">— ไม่ระบุ —</option>
             {fd.options?.map((o) => (
               <option key={o.value} value={o.value}>
                 {o.label}
               </option>
             ))}
-          </select>
-        </Field>
+          </select></Field>
       );
     case 'number':
     case 'price':
       return (
-        <Field label={fd.label} hint={fd.hint}>
-          <NumberInput
+        <Field label={fd.label} hint={fd.hint}><NumberInput
             step={fd.type === 'price' ? '0.01' : '1'}
             emptyValue={fd.type === 'price' ? null : 0}
             value={value === undefined ? null : (value as number | null)}
             placeholder={fd.placeholder}
             onChange={(v) => onChange(v)}
-          />
-        </Field>
+          /></Field>
       );
     default:
       return (
-        <Field label={fd.label} hint={fd.hint}>
-          <input
+        <Field label={fd.label} hint={fd.hint}><input
             className="input"
             value={(value as string) || ''}
             placeholder={fd.placeholder}
             onChange={(e) => onChange(e.target.value)}
-          />
-        </Field>
+          /></Field>
       );
   }
 }

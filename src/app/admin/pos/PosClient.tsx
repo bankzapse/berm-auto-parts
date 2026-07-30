@@ -165,137 +165,74 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
   // ---- แสดงใบเสร็จหลังขาย ----
   if (receipt) {
     return (
-      <div>
-        <div className="no-print mb-4 flex flex-wrap items-center gap-3">
-          <h1 className="text-xl font-bold text-green-700">✓ ขายสำเร็จ • {receipt.docNumber}</h1>
-          <button onClick={() => window.print()} className="btn-primary">🖨️ พิมพ์ใบเสร็จ</button>
-          <button onClick={() => { setReceipt(null); searchRef.current?.focus(); }} className="btn-outline">
+      <div><div className="no-print mb-4 flex flex-wrap items-center gap-3"><h1 className="text-xl font-bold text-green-700">✓ ขายสำเร็จ • {receipt.docNumber}</h1><button onClick={() => window.print()} className="btn-primary"> พิมพ์ใบเสร็จ</button><button onClick={() => { setReceipt(null); searchRef.current?.focus(); }} className="btn-outline">
             + ขายรายการใหม่
-          </button>
-        </div>
-        <div className="no-print rounded-xl border border-neutral-200 bg-neutral-50 p-4">
-          <ThermalReceipt data={receipt} />
-        </div>
-      </div>
+          </button></div><div className="no-print rounded-xl border border-neutral-200 bg-neutral-50 p-4"><ThermalReceipt data={receipt} /></div></div>
     );
   }
 
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-neutral-800">ขายหน้าร้าน (POS)</h1>
-        <span className="text-sm text-neutral-500">สแกนบาร์โค้ด (เครื่องสแกน USB) หรือค้นหาเพื่อเพิ่มลงตะกร้า</span>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-5">
+    <div><div className="mb-4 flex items-center justify-between"><h1 className="text-2xl font-bold text-neutral-800">ขายหน้าร้าน (POS)</h1><span className="text-sm text-neutral-500">สแกนบาร์โค้ด (เครื่องสแกน USB) หรือค้นหาเพื่อเพิ่มลงตะกร้า</span></div><div className="grid gap-4 lg:grid-cols-5">
         {/* ค้นหา + สินค้า */}
-        <div className="lg:col-span-3">
-          <div className="mb-3 flex gap-2">
-            <input
+        <div className="lg:col-span-3"><div className="mb-3 flex gap-2"><input
               ref={searchRef}
               className="input"
-              placeholder="🔍 สแกน/พิมพ์รหัส หรือค้นหาชื่อสินค้า แล้ว Enter"
+              placeholder=" สแกน/พิมพ์รหัส หรือค้นหาชื่อสินค้า แล้ว Enter"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={onSearchKey}
               autoFocus
-            />
-            <button onClick={() => setScanOpen(true)} className="btn-outline whitespace-nowrap px-3">📷 กล้อง</button>
-          </div>
-          <div className="grid max-h-[65vh] grid-cols-2 gap-2 overflow-y-auto sm:grid-cols-3">
+            /><button onClick={() => setScanOpen(true)} className="btn-outline whitespace-nowrap px-3"> กล้อง</button></div><div className="grid max-h-[65vh] grid-cols-2 gap-2 overflow-y-auto sm:grid-cols-3">
             {filtered.map((p) => (
               <button
                 key={p.id}
                 onClick={() => addToCart(p)}
                 className="card p-3 text-left transition-transform hover:-translate-y-0.5 hover:border-brand-300"
-              >
-                <div className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-neutral-800">{p.name}</div>
-                <div className="mt-1 flex items-center justify-between">
-                  <span className="font-bold text-brand-800">฿{formatBaht(p.price)}</span>
-                  <span className={`text-xs ${p.stock <= 0 ? 'text-red-500' : 'text-neutral-400'}`}>คงเหลือ {p.stock}</span>
-                </div>
+              ><div className="line-clamp-2 min-h-[2.5rem] text-sm font-medium text-neutral-800">{p.name}</div><div className="mt-1 flex items-center justify-between"><span className="font-bold text-brand-800">฿{formatBaht(p.price)}</span><span className={`text-xs ${p.stock <= 0 ? 'text-red-500' : 'text-neutral-400'}`}>คงเหลือ {p.stock}</span></div>
                 {p.sku ? <div className="text-xs text-neutral-400">{p.sku}</div> : null}
-                {p.fitment ? <div className="truncate text-xs text-brand-500" title={p.fitment}>🚗 {p.fitment}</div> : null}
+                {p.fitment ? <div className="truncate text-xs text-brand-500" title={p.fitment}> {p.fitment}</div> : null}
               </button>
             ))}
             {filtered.length === 0 && <p className="col-span-full p-6 text-center text-neutral-400">ไม่พบสินค้า</p>}
-          </div>
-        </div>
+          </div></div>
 
         {/* ตะกร้า */}
-        <div className="lg:col-span-2">
-          <div className="card sticky top-4 flex flex-col">
-            <div className="flex items-center justify-between border-b border-neutral-100 p-3">
-              <h2 className="font-bold text-neutral-800">ตะกร้า ({cart.length})</h2>
+        <div className="lg:col-span-2"><div className="card sticky top-4 flex flex-col"><div className="flex items-center justify-between border-b border-neutral-100 p-3"><h2 className="font-bold text-neutral-800">ตะกร้า ({cart.length})</h2>
               {cart.length > 0 && (
                 <button onClick={clearCart} className="text-sm text-red-500 hover:underline">ล้าง</button>
               )}
-            </div>
-
-            <div className="max-h-[40vh] overflow-y-auto p-2">
+            </div><div className="max-h-[40vh] overflow-y-auto p-2">
               {cart.length === 0 ? (
                 <p className="p-6 text-center text-sm text-neutral-400">ยังไม่มีสินค้า</p>
               ) : (
                 cart.map((it, i) => (
-                  <div key={i} className="flex items-center gap-2 border-b border-neutral-50 py-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">{it.name}</div>
-                      <div className="mt-1 flex items-center gap-1">
-                        <button onClick={() => setQty(i, Math.max(1, it.qty - 1))} className="h-6 w-6 rounded bg-neutral-100 font-bold">−</button>
-                        <NumberInput
+                  <div key={i} className="flex items-center gap-2 border-b border-neutral-50 py-2"><div className="min-w-0 flex-1"><div className="truncate text-sm font-medium">{it.name}</div><div className="mt-1 flex items-center gap-1"><button onClick={() => setQty(i, Math.max(1, it.qty - 1))} className="h-6 w-6 rounded bg-neutral-100 font-bold">−</button><NumberInput
                           className="w-12 rounded border border-neutral-200 px-1 text-center text-sm"
                           value={it.qty}
                           emptyValue={1}
                           onChange={(v) => setQty(i, v ?? 1)}
-                        />
-                        <button onClick={() => setQty(i, it.qty + 1)} className="h-6 w-6 rounded bg-neutral-100 font-bold">+</button>
-                        <span className="text-xs text-neutral-400">×</span>
-                        <NumberInput
+                        /><button onClick={() => setQty(i, it.qty + 1)} className="h-6 w-6 rounded bg-neutral-100 font-bold">+</button><span className="text-xs text-neutral-400">×</span><NumberInput
                           step="0.01"
                           className="w-20 rounded border border-neutral-200 px-1 text-right text-sm"
                           value={it.price}
                           emptyValue={0}
                           onChange={(v) => setPrice(i, v ?? 0)}
-                        />
-                      </div>
-                    </div>
-                    <div className="w-16 text-right text-sm font-semibold">฿{formatBaht(it.price * it.qty)}</div>
-                    <button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600">✕</button>
-                  </div>
+                        /></div></div><div className="w-16 text-right text-sm font-semibold">฿{formatBaht(it.price * it.qty)}</div><button onClick={() => removeItem(i)} className="text-red-400 hover:text-red-600">✕</button></div>
                 ))
               )}
-            </div>
-
-            <div className="space-y-2 border-t border-neutral-100 p-3 text-sm">
-              <div className="flex justify-between text-neutral-600">
-                <span>รวม</span><span>฿{formatBaht(subtotal)}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-neutral-600">ส่วนลด</span>
-                <NumberInput step="0.01" className="w-24 rounded border border-neutral-300 px-2 py-1 text-right"
-                  value={discount} emptyValue={0} onChange={(v) => setDiscount(v ?? 0)} />
-              </div>
-              <div className="flex justify-between border-t border-neutral-200 pt-2 text-lg font-bold text-brand-800">
-                <span>ยอดสุทธิ</span><span>฿{formatBaht(total)}</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 pt-1">
-                <select className="input" value={payMethod} onChange={(e) => setPayMethod(e.target.value)}>
-                  {PAY.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
-                </select>
-                <input
+            </div><div className="space-y-2 border-t border-neutral-100 p-3 text-sm"><div className="flex justify-between text-neutral-600"><span>รวม</span><span>฿{formatBaht(subtotal)}</span></div><div className="flex items-center justify-between"><span className="text-neutral-600">ส่วนลด</span><NumberInput step="0.01" className="w-24 rounded border border-neutral-300 px-2 py-1 text-right"
+                  value={discount} emptyValue={0} onChange={(v) => setDiscount(v ?? 0)} /></div><div className="flex justify-between border-t border-neutral-200 pt-2 text-lg font-bold text-brand-800"><span>ยอดสุทธิ</span><span>฿{formatBaht(total)}</span></div><div className="grid grid-cols-2 gap-2 pt-1"><select className="input" value={payMethod} onChange={(e) => setPayMethod(e.target.value)}>
+                  {PAY.map((p) =><option key={p.value} value={p.value}>{p.label}</option>)}
+                </select><input
                   type="number"
                   step="0.01"
                   className="input"
                   placeholder={payMethod === 'cash' ? 'รับเงินมา' : 'ยอดชำระ'}
                   value={received}
                   onChange={(e) => setReceived(e.target.value)}
-                />
-              </div>
+                /></div>
               {change > 0 && (
-                <div className="flex justify-between font-semibold text-green-700">
-                  <span>เงินทอน</span><span>฿{formatBaht(change)}</span>
-                </div>
+                <div className="flex justify-between font-semibold text-green-700"><span>เงินทอน</span><span>฿{formatBaht(change)}</span></div>
               )}
 
               <input className="input" placeholder="ชื่อลูกค้า (ไม่บังคับ)" value={customer} onChange={(e) => setCustomer(e.target.value)} />
@@ -304,15 +241,10 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
 
               <button onClick={checkout} disabled={saving || cart.length === 0} className="btn-primary w-full disabled:opacity-60">
                 {saving ? <><Spinner /> กำลังบันทึก…</> : `ชำระเงิน ฿${formatBaht(total)}`}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+              </button></div></div></div></div>
 
       {scanOpen && <CameraScanner onDetect={(code) => { if (addByCode(code)) setScanOpen(false); }} onClose={() => setScanOpen(false)} />}
-    </div>
-  );
+    </div> );
 }
 
 // สแกนบาร์โค้ดด้วยกล้อง (ใช้ BarcodeDetector ถ้าเบราว์เซอร์รองรับ)
@@ -365,15 +297,5 @@ function CameraScanner({ onDetect, onClose }: { onDetect: (code: string) => void
   }, [onDetect]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-4">
-        <div className="mb-2 flex items-center justify-between">
-          <h3 className="font-bold text-neutral-800">สแกนด้วยกล้อง</h3>
-          <button onClick={onClose} className="text-neutral-400 hover:text-neutral-700">✕</button>
-        </div>
-        <video ref={videoRef} className="aspect-square w-full rounded-lg bg-black object-cover" muted playsInline />
-        <p className="mt-2 text-center text-sm text-neutral-500">{msg}</p>
-      </div>
-    </div>
-  );
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"><div className="w-full max-w-sm rounded-2xl bg-white p-4"><div className="mb-2 flex items-center justify-between"><h3 className="font-bold text-neutral-800">สแกนด้วยกล้อง</h3><button onClick={onClose} className="text-neutral-400 hover:text-neutral-700">✕</button></div><video ref={videoRef} className="aspect-square w-full rounded-lg bg-black object-cover" muted playsInline /><p className="mt-2 text-center text-sm text-neutral-500">{msg}</p></div></div> );
 }

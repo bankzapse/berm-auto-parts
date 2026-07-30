@@ -135,18 +135,9 @@ export default function DocumentEditor({
   return (
     <div className="space-y-6">
       {/* ===== ฟอร์ม (ไม่พิมพ์) ===== */}
-      <div className="no-print space-y-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <a href="/admin/documents" className="text-sm text-neutral-500 hover:text-brand-700">← กลับ</a>
-          <h1 className="text-xl font-bold text-neutral-800">
+      <div className="no-print space-y-6"><div className="flex flex-wrap items-center gap-3"><a href="/admin/documents" className="text-sm text-neutral-500 hover:text-brand-700">← กลับ</a><h1 className="text-xl font-bold text-neutral-800">
             {mode === 'new' ? 'สร้างเอกสารใหม่' : `แก้ไข ${d.docNumber || ''}`}
-          </h1>
-        </div>
-
-        <div className="card grid gap-4 p-5 sm:grid-cols-3">
-          <label>
-            <span className="label">ประเภทเอกสาร</span>
-            <select
+          </h1></div><div className="card grid gap-4 p-5 sm:grid-cols-3"><label><span className="label">ประเภทเอกสาร</span><select
               className="input disabled:bg-neutral-100 disabled:text-neutral-500"
               value={d.type}
               onChange={(e) => set('type', e.target.value as DocTypeKey)}
@@ -157,61 +148,31 @@ export default function DocumentEditor({
               ))}
             </select>
             {mode === 'edit' ? <span className="mt-1 block text-xs text-neutral-400">เปลี่ยนประเภทหลังออกเลขที่ไม่ได้</span> : null}
-          </label>
-          <label>
-            <span className="label">สถานะ</span>
-            <select className="input" value={d.status} onChange={(e) => set('status', e.target.value)}>
+          </label><label><span className="label">สถานะ</span><select className="input" value={d.status} onChange={(e) => set('status', e.target.value)}>
               {DOC_STATUS.map((s) => (
                 <option key={s.value} value={s.value}>{s.label}</option>
               ))}
-            </select>
-          </label>
-          <label>
-            <span className="label">วันที่เอกสาร</span>
-            <input type="date" className="input" value={d.issueDate} onChange={(e) => set('issueDate', e.target.value)} />
-          </label>
-        </div>
+            </select></label><label><span className="label">วันที่เอกสาร</span><input type="date" className="input" value={d.issueDate} onChange={(e) => set('issueDate', e.target.value)} /></label></div>
 
         {/* ลูกค้า */}
-        <div className="card grid gap-4 p-5 sm:grid-cols-2">
-          <label>
-            <span className="label">ชื่อลูกค้า</span>
-            <input className="input" value={d.customerName} onChange={(e) => set('customerName', e.target.value)} />
-          </label>
-          <label>
-            <span className="label">เบอร์โทรลูกค้า</span>
-            <input className="input" value={d.customerPhone} onChange={(e) => set('customerPhone', e.target.value)} />
-          </label>
-          <label className="sm:col-span-2">
-            <span className="label">ที่อยู่ลูกค้า</span>
-            <input className="input" value={d.customerAddress} onChange={(e) => set('customerAddress', e.target.value)} />
-          </label>
-          <label>
-            <span className="label">เลขผู้เสียภาษีลูกค้า</span>
-            <input className="input" value={d.customerTaxId} onChange={(e) => set('customerTaxId', e.target.value)} />
-          </label>
+        <div className="card grid gap-4 p-5 sm:grid-cols-2"><label><span className="label">ชื่อลูกค้า</span><input className="input" value={d.customerName} onChange={(e) => set('customerName', e.target.value)} /></label><label><span className="label">เบอร์โทรลูกค้า</span><input className="input" value={d.customerPhone} onChange={(e) => set('customerPhone', e.target.value)} /></label><label className="sm:col-span-2"><span className="label">ที่อยู่ลูกค้า</span><input className="input" value={d.customerAddress} onChange={(e) => set('customerAddress', e.target.value)} /></label><label><span className="label">เลขผู้เสียภาษีลูกค้า</span><input className="input" value={d.customerTaxId} onChange={(e) => set('customerTaxId', e.target.value)} /></label>
           {d.type !== 'RECEIPT' && (
-            <label>
-              <span className="label">ครบกำหนดชำระ</span>
-              <input type="date" className="input" value={d.dueDate} onChange={(e) => set('dueDate', e.target.value)} />
-            </label>
+            <label><span className="label">ครบกำหนดชำระ</span><input type="date" className="input" value={d.dueDate} onChange={(e) => set('dueDate', e.target.value)} /></label>
           )}
         </div>
 
         {/* รายการสินค้า */}
-        <div className="card p-5">
-          <h2 className="mb-3 font-bold text-brand-800">รายการสินค้า</h2>
+        <div className="card p-5"><h2 className="mb-3 font-bold text-brand-800">รายการสินค้า</h2>
 
           {d.stockDeducted ? (
             <div className="mb-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
-              🔒 เอกสารนี้<strong>ตัดสต็อกไปแล้ว</strong> — แก้รายการสินค้า/ราคาไม่ได้ (บันทึกได้เฉพาะข้อมูลหัว/การชำระ) เพื่อกันสต็อกเพี้ยน
+               เอกสารนี้<strong>ตัดสต็อกไปแล้ว</strong> — แก้รายการสินค้า/ราคาไม่ได้ (บันทึกได้เฉพาะข้อมูลหัว/การชำระ) เพื่อกันสต็อกเพี้ยน
             </div>
           ) : null}
 
-          <div className="relative mb-3">
-            <input
+          <div className="relative mb-3"><input
               className="input"
-              placeholder="🔍 ค้นหาสินค้าเพื่อเพิ่ม (หรือกดปุ่มเพิ่มแถวว่างด้านล่าง)"
+              placeholder=" ค้นหาสินค้าเพื่อเพิ่ม (หรือกดปุ่มเพิ่มแถวว่างด้านล่าง)"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -222,132 +183,60 @@ export default function DocumentEditor({
                     key={p.id}
                     onClick={() => addProduct(p)}
                     className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-brand-50"
-                  >
-                    <span>{p.name} <span className="text-neutral-400">{p.sku}</span></span>
-                    <span className="text-neutral-500">{p.price != null ? `฿${formatBaht(p.price)}` : '-'}</span>
-                  </button>
+                  ><span>{p.name} <span className="text-neutral-400">{p.sku}</span></span><span className="text-neutral-500">{p.price != null ? `฿${formatBaht(p.price)}` : '-'}</span></button>
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[600px] text-sm">
-              <thead className="text-left text-neutral-500">
-                <tr>
-                  <th className="p-2">รายการ</th>
-                  <th className="w-20 p-2 text-right">จำนวน</th>
-                  <th className="w-20 p-2">หน่วย</th>
-                  <th className="w-28 p-2 text-right">ราคา/หน่วย</th>
-                  <th className="w-28 p-2 text-right">รวม</th>
-                  <th className="w-10 p-2" />
-                </tr>
-              </thead>
-              <tbody>
+          </div><div className="overflow-x-auto"><table className="w-full min-w-[600px] text-sm"><thead className="text-left text-neutral-500"><tr><th className="p-2">รายการ</th><th className="w-20 p-2 text-right">จำนวน</th><th className="w-20 p-2">หน่วย</th><th className="w-28 p-2 text-right">ราคา/หน่วย</th><th className="w-28 p-2 text-right">รวม</th><th className="w-10 p-2" /></tr></thead><tbody>
                 {d.items.map((it, i) => (
-                  <tr key={i} className="border-t border-neutral-100">
-                    <td className="p-1">
-                      <input className="input" value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} placeholder="ชื่อรายการ" />
-                    </td>
-                    <td className="p-1">
-                      <NumberInput step="any" className="input text-right" value={it.quantity}
-                        onChange={(v) => updateItem(i, { quantity: v ?? 0 })} />
-                    </td>
-                    <td className="p-1">
-                      <input className="input" value={it.unit} onChange={(e) => updateItem(i, { unit: e.target.value })} />
-                    </td>
-                    <td className="p-1">
-                      <NumberInput step="0.01" className="input text-right" value={it.unitPrice}
-                        onChange={(v) => updateItem(i, { unitPrice: v ?? 0 })} />
-                    </td>
-                    <td className="p-2 text-right font-medium text-neutral-700">
+                  <tr key={i} className="border-t border-neutral-100"><td className="p-1"><input className="input" value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} placeholder="ชื่อรายการ" /></td><td className="p-1"><NumberInput step="any" className="input text-right" value={it.quantity}
+                        onChange={(v) => updateItem(i, { quantity: v ?? 0 })} /></td><td className="p-1"><input className="input" value={it.unit} onChange={(e) => updateItem(i, { unit: e.target.value })} /></td><td className="p-1"><NumberInput step="0.01" className="input text-right" value={it.unitPrice}
+                        onChange={(v) => updateItem(i, { unitPrice: v ?? 0 })} /></td><td className="p-2 text-right font-medium text-neutral-700">
                       ฿{formatBaht((Number(it.quantity) || 0) * (Number(it.unitPrice) || 0))}
-                    </td>
-                    <td className="p-1 text-center">
-                      <button onClick={() => removeItem(i)} className="text-red-500 hover:text-red-700">✕</button>
-                    </td>
-                  </tr>
+                    </td><td className="p-1 text-center"><button onClick={() => removeItem(i)} className="text-red-500 hover:text-red-700">✕</button></td></tr>
                 ))}
                 {d.items.length === 0 && (
                   <tr><td colSpan={6} className="p-4 text-center text-neutral-400">ยังไม่มีรายการ</td></tr>
                 )}
-              </tbody>
-            </table>
-          </div>
-
-          <button onClick={addBlankRow} className="btn-outline mt-3 py-2 text-sm">➕ เพิ่มแถวว่าง</button>
-        </div>
+              </tbody></table></div><button onClick={addBlankRow} className="btn-outline mt-3 py-2 text-sm"> เพิ่มแถวว่าง</button></div>
 
         {/* ยอดรวม + ตัวเลือก */}
-        <div className="card grid gap-4 p-5 sm:grid-cols-2">
-          <div className="space-y-3">
-            <label>
-              <span className="label">ส่วนลด (บาท)</span>
-              <NumberInput step="0.01" value={d.discount} onChange={(v) => set('discount', v ?? 0)} />
-            </label>
-            <label>
-              <span className="label">ภาษีมูลค่าเพิ่ม VAT (%)</span>
-              <NumberInput step="0.01" value={d.vatRate} onChange={(v) => set('vatRate', v ?? 0)} placeholder="0 = ไม่มี VAT, 7 = VAT 7%" />
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <label>
-                <span className="label">วิธีชำระ</span>
-                <select className="input" value={d.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value)}>
+        <div className="card grid gap-4 p-5 sm:grid-cols-2"><div className="space-y-3"><label><span className="label">ส่วนลด (บาท)</span><NumberInput step="0.01" value={d.discount} onChange={(v) => set('discount', v ?? 0)} /></label><label><span className="label">ภาษีมูลค่าเพิ่ม VAT (%)</span><NumberInput step="0.01" value={d.vatRate} onChange={(v) => set('vatRate', v ?? 0)} placeholder="0 = ไม่มี VAT, 7 = VAT 7%" /></label><div className="grid grid-cols-2 gap-3"><label><span className="label">วิธีชำระ</span><select className="input" value={d.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value)}>
                   {PAYMENT_METHODS.map((m) => (
                     <option key={m.value} value={m.value}>{m.label}</option>
                   ))}
-                </select>
-              </label>
-              <label>
-                <span className="label">ยอดชำระแล้ว (บาท)</span>
-                <NumberInput step="0.01" value={d.paidAmount} onChange={(v) => set('paidAmount', v ?? 0)} />
-              </label>
-            </div>
-            <label>
-              <span className="label">หมายเหตุ</span>
-              <textarea className="input min-h-20" value={d.note} onChange={(e) => set('note', e.target.value)} />
-            </label>
+                </select></label><label><span className="label">ยอดชำระแล้ว (บาท)</span><NumberInput step="0.01" value={d.paidAmount} onChange={(v) => set('paidAmount', v ?? 0)} /></label></div><label><span className="label">หมายเหตุ</span><textarea className="input min-h-20" value={d.note} onChange={(e) => set('note', e.target.value)} /></label>
             {d.type === 'RECEIPT' && mode === 'new' && (
-              <label className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                <input type="checkbox" className="h-5 w-5" checked={deductStock} onChange={(e) => setDeductStock(e.target.checked)} />
+              <label className="flex items-center gap-2 text-sm font-medium text-neutral-700"><input type="checkbox" className="h-5 w-5" checked={deductStock} onChange={(e) => setDeductStock(e.target.checked)} />
                 ตัดสต็อกสินค้าอัตโนมัติเมื่อบันทึก
               </label>
             )}
-          </div>
-
-          <div className="rounded-xl bg-neutral-50 p-4 text-sm">
-            <Row label="รวมเป็นเงิน" value={`฿${formatBaht(totals.subtotal)}`} />
+          </div><div className="rounded-xl bg-neutral-50 p-4 text-sm"><Row label="รวมเป็นเงิน" value={`฿${formatBaht(totals.subtotal)}`} />
             {totals.discount > 0 && <Row label="ส่วนลด" value={`-฿${formatBaht(totals.discount)}`} />}
             {totals.vatRate > 0 && <Row label={`VAT ${totals.vatRate}%`} value={`฿${formatBaht(totals.vatAmount)}`} />}
-            <div className="mt-2 border-t border-neutral-300 pt-2">
-              <Row label="ยอดสุทธิ" value={`฿${formatBaht(totals.total)}`} big />
-            </div>
+            <div className="mt-2 border-t border-neutral-300 pt-2"><Row label="ยอดสุทธิ" value={`฿${formatBaht(totals.total)}`} big /></div>
             {d.paidAmount > 0 && <Row label="ชำระแล้ว" value={`฿${formatBaht(d.paidAmount)}`} />}
             {totals.total - d.paidAmount > 0.01 && (
               <Row label="ค้างชำระ" value={`฿${formatBaht(totals.total - d.paidAmount)}`} />
             )}
-          </div>
-        </div>
+          </div></div>
 
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
-        <div className="sticky bottom-4 flex flex-wrap items-center gap-3">
-          <button onClick={save} disabled={saving} className="btn-primary disabled:opacity-70">
+        <div className="sticky bottom-4 flex flex-wrap items-center gap-3"><button onClick={save} disabled={saving} className="btn-primary disabled:opacity-70">
             {saving ? <><Spinner /> กำลังบันทึก…</> : mode === 'new' ? 'บันทึกเอกสาร' : 'บันทึกการแก้ไข'}
           </button>
           {mode === 'edit' && (
-            <button onClick={() => window.print()} className="btn-outline">🖨️ พิมพ์เอกสาร</button>
+            <button onClick={() => window.print()} className="btn-outline"> พิมพ์เอกสาร</button>
           )}
           {mode === 'new' && <span className="text-sm text-neutral-500">บันทึกก่อนจึงจะพิมพ์ได้</span>}
-        </div>
-      </div>
+        </div></div>
 
       {/* ===== พื้นที่พิมพ์ (เฉพาะตอนแก้ไข/มีเลขที่) ===== */}
       {mode === 'edit' && (
         <PrintView d={d} totals={totals} shop={shop} />
       )}
-    </div>
-  );
+    </div> );
 }
 
 function PrintView({
@@ -362,112 +251,58 @@ function PrintView({
   return (
     <div className="print-area mx-auto max-w-[800px] rounded-xl border border-neutral-200 bg-white p-8 text-sm text-neutral-800">
       {/* หัวเอกสาร */}
-      <div className="flex items-start justify-between border-b-2 border-neutral-800 pb-4">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between border-b-2 border-neutral-800 pb-4"><div className="flex items-center gap-3">
           {shop.logo ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={shop.logo} alt="" className="h-16 w-16 rounded-full object-cover" />
           ) : null}
-          <div>
-            <div className="text-xl font-bold text-neutral-900">{shop.shopName}</div>
-            <div className="text-xs text-neutral-500">{shop.address}</div>
-            <div className="text-xs text-neutral-500">
+          <div><div className="text-xl font-bold text-neutral-900">{shop.shopName}</div><div className="text-xs text-neutral-500">{shop.address}</div><div className="text-xs text-neutral-500">
               โทร {shop.phone}{shop.phone2 ? `, ${shop.phone2}` : ''}
               {shop.taxId ? ` • เลขภาษี ${shop.taxId}` : ''}
-            </div>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-lg font-bold">
+            </div></div></div><div className="text-right"><div className="text-lg font-bold">
             {docTypeLabel(d.type)}
             {totals.vatRate > 0 && d.type === 'RECEIPT' ? '/ใบกำกับภาษี' : ''}
-          </div>
-          <div className="text-neutral-600">เลขที่: {d.docNumber}</div>
-          <div className="text-neutral-600">
+          </div><div className="text-neutral-600">เลขที่: {d.docNumber}</div><div className="text-neutral-600">
             วันที่: {d.issueDate ? new Date(d.issueDate).toLocaleDateString('th-TH', { dateStyle: 'medium' }) : '-'}
-          </div>
-        </div>
-      </div>
+          </div></div></div>
 
       {/* ลูกค้า */}
-      <div className="mt-4">
-        <div className="font-semibold text-neutral-700">ลูกค้า</div>
-        <div>{d.customerName || '-'}</div>
+      <div className="mt-4"><div className="font-semibold text-neutral-700">ลูกค้า</div><div>{d.customerName || '-'}</div>
         {d.customerAddress ? <div className="text-neutral-600">{d.customerAddress}</div> : null}
         <div className="text-neutral-600">
           {d.customerPhone ? `โทร ${d.customerPhone}` : ''}
           {d.customerTaxId ? `  เลขภาษี ${d.customerTaxId}` : ''}
-        </div>
-      </div>
+        </div></div>
 
       {/* ตาราง */}
-      <table className="mt-4 w-full border-collapse text-sm">
-        <thead>
-          <tr className="border-y border-neutral-400 bg-neutral-50 text-left">
-            <th className="p-2 text-center">#</th>
-            <th className="p-2">รายการ</th>
-            <th className="p-2 text-right">จำนวน</th>
-            <th className="p-2 text-right">ราคา/หน่วย</th>
-            <th className="p-2 text-right">จำนวนเงิน</th>
-          </tr>
-        </thead>
-        <tbody>
+      <table className="mt-4 w-full border-collapse text-sm"><thead><tr className="border-y border-neutral-400 bg-neutral-50 text-left"><th className="p-2 text-center">#</th><th className="p-2">รายการ</th><th className="p-2 text-right">จำนวน</th><th className="p-2 text-right">ราคา/หน่วย</th><th className="p-2 text-right">จำนวนเงิน</th></tr></thead><tbody>
           {totals.items.map((it, i) => (
-            <tr key={i} className="border-b border-neutral-200">
-              <td className="p-2 text-center">{i + 1}</td>
-              <td className="p-2">
+            <tr key={i} className="border-b border-neutral-200"><td className="p-2 text-center">{i + 1}</td><td className="p-2">
                 {it.name}
                 {it.sku ? <span className="text-neutral-400"> ({it.sku})</span> : null}
-              </td>
-              <td className="p-2 text-right">{it.quantity} {it.unit}</td>
-              <td className="p-2 text-right">{formatBaht(it.unitPrice)}</td>
-              <td className="p-2 text-right">{formatBaht(it.amount)}</td>
-            </tr>
+              </td><td className="p-2 text-right">{it.quantity} {it.unit}</td><td className="p-2 text-right">{formatBaht(it.unitPrice)}</td><td className="p-2 text-right">{formatBaht(it.amount)}</td></tr>
           ))}
-        </tbody>
-      </table>
+        </tbody></table>
 
       {/* ยอดรวม */}
-      <div className="mt-4 flex justify-end">
-        <div className="w-64 space-y-1">
-          <Row label="รวมเป็นเงิน" value={`฿${formatBaht(totals.subtotal)}`} />
+      <div className="mt-4 flex justify-end"><div className="w-64 space-y-1"><Row label="รวมเป็นเงิน" value={`฿${formatBaht(totals.subtotal)}`} />
           {totals.discount > 0 && <Row label="ส่วนลด" value={`-฿${formatBaht(totals.discount)}`} />}
           {totals.vatRate > 0 && <Row label={`VAT ${totals.vatRate}%`} value={`฿${formatBaht(totals.vatAmount)}`} />}
-          <div className="border-t border-neutral-800 pt-1">
-            <Row label="ยอดสุทธิ" value={`฿${formatBaht(totals.total)}`} big />
-          </div>
+          <div className="border-t border-neutral-800 pt-1"><Row label="ยอดสุทธิ" value={`฿${formatBaht(totals.total)}`} big /></div>
           {d.paidAmount > 0 && <Row label="ชำระแล้ว" value={`฿${formatBaht(d.paidAmount)}`} />}
           {totals.total - d.paidAmount > 0.01 && (
             <Row label="ค้างชำระ" value={`฿${formatBaht(totals.total - d.paidAmount)}`} />
           )}
-        </div>
-      </div>
-
-      <div className="mt-3 text-xs text-neutral-500">
+        </div></div><div className="mt-3 text-xs text-neutral-500">
         วิธีชำระ: {PAYMENT_METHODS.find((m) => m.value === d.paymentMethod)?.label || d.paymentMethod}
       </div>
       {d.note ? <div className="mt-2 text-neutral-600">หมายเหตุ: {d.note}</div> : null}
 
       {/* ลายเซ็น */}
-      <div className="mt-10 grid grid-cols-2 gap-8 text-center text-xs text-neutral-500">
-        <div>
-          <div className="mx-auto mt-8 w-40 border-t border-neutral-400 pt-1">ผู้รับเงิน / ผู้มีอำนาจ</div>
-        </div>
-        <div>
-          <div className="mx-auto mt-8 w-40 border-t border-neutral-400 pt-1">ผู้รับสินค้า / ลูกค้า</div>
-        </div>
-      </div>
-
-      <div className="mt-6 text-center text-xs text-neutral-500">{shop.docFooter}</div>
-    </div>
-  );
+      <div className="mt-10 grid grid-cols-2 gap-8 text-center text-xs text-neutral-500"><div><div className="mx-auto mt-8 w-40 border-t border-neutral-400 pt-1">ผู้รับเงิน / ผู้มีอำนาจ</div></div><div><div className="mx-auto mt-8 w-40 border-t border-neutral-400 pt-1">ผู้รับสินค้า / ลูกค้า</div></div></div><div className="mt-6 text-center text-xs text-neutral-500">{shop.docFooter}</div></div> );
 }
 
 function Row({ label, value, big }: { label: string; value: string; big?: boolean }) {
   return (
-    <div className={`flex justify-between ${big ? 'text-base font-bold text-brand-800' : 'text-neutral-600'}`}>
-      <span>{label}</span>
-      <span>{value}</span>
-    </div>
-  );
+    <div className={`flex justify-between ${big ? 'text-base font-bold text-brand-800' : 'text-neutral-600'}`}><span>{label}</span><span>{value}</span></div> );
 }

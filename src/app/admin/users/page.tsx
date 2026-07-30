@@ -17,7 +17,7 @@ export default async function UsersPage() {
   if (!(await isOwner())) {
     return (
       <div className="rounded-xl border border-amber-300 bg-amber-50 p-6 text-amber-800">
-        🔒 หน้านี้สำหรับ<strong>เจ้าของร้าน</strong>เท่านั้น
+         หน้านี้สำหรับ<strong>เจ้าของร้าน</strong>เท่านั้น
       </div>
     );
   }
@@ -41,12 +41,9 @@ export default async function UsersPage() {
   const defaults = { username: '', name: '', password: '', role: 'STAFF', active: true };
 
   return (
-    <div>
-      <h1 className="mb-1 text-2xl font-bold text-neutral-800">ผู้ใช้งาน & สิทธิ์</h1>
-      <p className="mb-6 text-neutral-500">
+    <div><h1 className="mb-1 text-2xl font-bold text-neutral-800">ผู้ใช้งาน & สิทธิ์</h1><p className="mb-6 text-neutral-500">
         เจ้าของร้านล็อกอินด้วยรหัส env ได้เสมอ (เว้นช่องชื่อผู้ใช้) — เพิ่มบัญชีพนักงานได้ที่นี่
-      </p>
-      <CollectionManager
+      </p><CollectionManager
         endpoint="/api/users"
         items={users.map((it) => ({
           ...it,
@@ -56,7 +53,5 @@ export default async function UsersPage() {
         defaults={defaults}
         titleKey="username"
         addLabel="เพิ่มผู้ใช้"
-      />
-    </div>
-  );
+      /></div> );
 }

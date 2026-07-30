@@ -148,22 +148,14 @@ export default function StickerTool({
   return (
     <div className="space-y-6">
       {/* ==== ตัวเลือก (ไม่พิมพ์) ==== */}
-      <div className="no-print space-y-6">
-        <div className="flex gap-2">
-          <TabBtn active={mode === 'custom'} onClick={() => setMode('custom')}>
-            ✍️ กำหนดข้อความเอง
-          </TabBtn>
-          <TabBtn active={mode === 'products'} onClick={() => setMode('products')}>
-            📦 เลือกจากสินค้า
-          </TabBtn>
-        </div>
+      <div className="no-print space-y-6"><div className="flex gap-2"><TabBtn active={mode === 'custom'} onClick={() => setMode('custom')}>
+             กำหนดข้อความเอง
+          </TabBtn><TabBtn active={mode === 'products'} onClick={() => setMode('products')}>
+             เลือกจากสินค้า
+          </TabBtn></div>
 
         {mode === 'custom' ? (
-          <div className="card space-y-3 p-5">
-            <div className="flex items-center justify-between">
-              <span className="label mb-0">บรรทัดข้อความ — เพิ่ม/ลบได้ ตั้งขนาด &amp; สีแต่ละบรรทัด</span>
-              <button onClick={addLine} className="btn-outline py-1.5 text-sm">➕ เพิ่มบรรทัด</button>
-            </div>
+          <div className="card space-y-3 p-5"><div className="flex items-center justify-between"><span className="label mb-0">บรรทัดข้อความ — เพิ่ม/ลบได้ ตั้งขนาด &amp; สีแต่ละบรรทัด</span><button onClick={addLine} className="btn-outline py-1.5 text-sm"> เพิ่มบรรทัด</button></div>
 
             {customLines.length === 0 ? (
               <p className="text-sm text-neutral-400">ยังไม่มีบรรทัด — กด “เพิ่มบรรทัด”</p>
@@ -171,15 +163,13 @@ export default function StickerTool({
 
             <div className="space-y-2">
               {customLines.map((ln, idx) => (
-                <div key={ln.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-neutral-200 p-2">
-                  <input
+                <div key={ln.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-neutral-200 p-2"><input
                     className="input min-w-[8rem] flex-1"
                     value={ln.text}
                     onChange={(e) => updateLine(ln.id, { text: e.target.value })}
                     placeholder={`บรรทัดที่ ${idx + 1}`}
                     style={{ fontSize: `${Math.min(ln.size, 20)}px`, color: ln.color, fontWeight: ln.bold ? 700 : 400 }}
-                  />
-                  <label className="flex items-center gap-1 text-xs text-neutral-500">
+                  /><label className="flex items-center gap-1 text-xs text-neutral-500">
                     ขนาด
                     <NumberInput
                       min={6} max={48}
@@ -187,158 +177,80 @@ export default function StickerTool({
                       value={ln.size}
                       emptyValue={12}
                       onChange={(v) => updateLine(ln.id, { size: v ?? 12 })}
-                    />
-                  </label>
-                  <label className="flex items-center gap-1 text-xs text-neutral-500" title="สีข้อความ">
+                    /></label><label className="flex items-center gap-1 text-xs text-neutral-500" title="สีข้อความ">
                     สี
                     <input
                       type="color"
                       className="h-8 w-10 cursor-pointer rounded border border-neutral-300"
                       value={ln.color}
                       onChange={(e) => updateLine(ln.id, { color: e.target.value })}
-                    />
-                  </label>
-                  <label className="flex items-center gap-1 text-xs text-neutral-500">
-                    <input type="checkbox" checked={ln.bold} onChange={(e) => updateLine(ln.id, { bold: e.target.checked })} /> หนา
-                  </label>
-                  <button onClick={() => moveLine(ln.id, -1)} className="px-1 text-neutral-400 hover:text-neutral-800" title="เลื่อนขึ้น">↑</button>
-                  <button onClick={() => moveLine(ln.id, 1)} className="px-1 text-neutral-400 hover:text-neutral-800" title="เลื่อนลง">↓</button>
-                  <button onClick={() => removeLine(ln.id)} className="px-1 text-red-500 hover:text-red-700" title="ลบบรรทัด">✕</button>
-                </div>
+                    /></label><label className="flex items-center gap-1 text-xs text-neutral-500"><input type="checkbox" checked={ln.bold} onChange={(e) => updateLine(ln.id, { bold: e.target.checked })} /> หนา
+                  </label><button onClick={() => moveLine(ln.id, -1)} className="px-1 text-neutral-400 hover:text-neutral-800" title="เลื่อนขึ้น">↑</button><button onClick={() => moveLine(ln.id, 1)} className="px-1 text-neutral-400 hover:text-neutral-800" title="เลื่อนลง">↓</button><button onClick={() => removeLine(ln.id)} className="px-1 text-red-500 hover:text-red-700" title="ลบบรรทัด">✕</button></div>
               ))}
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
+            </div><div className="grid gap-3 sm:grid-cols-2">
               {codeType !== 'none' ? (
-                <label>
-                  <span className="label">ค่าบาร์โค้ด / QR</span>
-                  <input className="input" value={codeValueInput} onChange={(e) => setCodeValueInput(e.target.value)} placeholder="เช่น 8850123456789 หรือ BRK-FR" />
-                </label>
+                <label><span className="label">ค่าบาร์โค้ด / QR</span><input className="input" value={codeValueInput} onChange={(e) => setCodeValueInput(e.target.value)} placeholder="เช่น 8850123456789 หรือ BRK-FR" /></label>
               ) : null}
-              <label>
-                <span className="label">จำนวนดวงที่พิมพ์</span>
-                <NumberInput min={1} max={60} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} />
-              </label>
-            </div>
-          </div>
+              <label><span className="label">จำนวนดวงที่พิมพ์</span><NumberInput min={1} max={60} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} /></label></div></div>
         ) : (
-          <div className="card p-5">
-            <input
+          <div className="card p-5"><input
               className="input mb-3"
               placeholder="ค้นหาสินค้า / รหัส…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-            />
-            <div className="max-h-72 space-y-1 overflow-y-auto">
+            /><div className="max-h-72 space-y-1 overflow-y-auto">
               {filtered.length === 0 ? (
                 <p className="p-4 text-center text-sm text-neutral-500">ไม่พบสินค้า</p>
               ) : (
                 filtered.map((p) => (
-                  <div key={p.id} className="flex items-center gap-3 rounded-lg border border-neutral-200 p-2">
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium">{p.name}</div>
-                      <div className="text-xs text-neutral-500">
+                  <div key={p.id} className="flex items-center gap-3 rounded-lg border border-neutral-200 p-2"><div className="min-w-0 flex-1"><div className="truncate text-sm font-medium">{p.name}</div><div className="text-xs text-neutral-500">
                         {p.sku || '—'} • {priceText(p) || 'ไม่มีราคา'}
-                      </div>
-                    </div>
-                    <NumberInput
+                      </div></div><NumberInput
                       min={0}
                       max={60}
                       className="w-20 rounded-lg border border-neutral-300 px-2 py-1 text-sm"
                       value={selected[p.id] ?? 0}
                       emptyValue={0}
                       onChange={(v) => setSelected((prev) => ({ ...prev, [p.id]: v ?? 0 }))}
-                    />
-                    <span className="text-xs text-neutral-400">ดวง</span>
-                  </div>
+                    /><span className="text-xs text-neutral-400">ดวง</span></div>
                 ))
               )}
-            </div>
-          </div>
+            </div></div>
         )}
 
         {/* รูปแบบสติกเกอร์ */}
-        <div className="card grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
-          <label>
-            <span className="label">ขนาดสติกเกอร์</span>
-            <select className="input" value={size} onChange={(e) => setSize(e.target.value as SizeKey)}>
+        <div className="card grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3"><label><span className="label">ขนาดสติกเกอร์</span><select className="input" value={size} onChange={(e) => setSize(e.target.value as SizeKey)}>
               {Object.entries(SIZES).map(([k, v]) => (
                 <option key={k} value={k}>{v.label}</option>
               ))}
-              <option value="custom">กำหนดเอง (ระบุขนาด)</option>
-            </select>
+              <option value="custom">กำหนดเอง (ระบุขนาด)</option></select>
             {size === 'custom' && (
-              <div className="mt-2 flex items-center gap-2 text-xs text-neutral-600">
-                <span>กว้าง</span>
-                <NumberInput
+              <div className="mt-2 flex items-center gap-2 text-xs text-neutral-600"><span>กว้าง</span><NumberInput
                   className="w-16 rounded border border-neutral-300 px-2 py-1 text-sm"
                   value={customW} emptyValue={45} min={10} max={200}
                   onChange={(v) => setCustomW(v ?? 45)}
-                />
-                <span>×</span>
-                <span>สูง</span>
-                <NumberInput
+                /><span>×</span><span>สูง</span><NumberInput
                   className="w-16 rounded border border-neutral-300 px-2 py-1 text-sm"
                   value={customH} emptyValue={25} min={8} max={200}
                   onChange={(v) => setCustomH(v ?? 25)}
-                />
-                <span>มม.</span>
-              </div>
+                /><span>มม.</span></div>
             )}
-          </label>
-          <label>
-            <span className="label">ฟอนต์ (เลือกตัวอักษร)</span>
-            <select className="input" value={font} onChange={(e) => setFont(e.target.value)}>
+          </label><label><span className="label">ฟอนต์ (เลือกตัวอักษร)</span><select className="input" value={font} onChange={(e) => setFont(e.target.value)}>
               {FONTS.map((ff) => (
                 <option key={ff.value} value={ff.value}>{ff.label}</option>
               ))}
-            </select>
-          </label>
-          <label>
-            <span className="label">จำนวนคอลัมน์/แถว</span>
-            <select className="input" value={columns} onChange={(e) => setColumns(Number(e.target.value))}>
+            </select></label><label><span className="label">จำนวนคอลัมน์/แถว</span><select className="input" value={columns} onChange={(e) => setColumns(Number(e.target.value))}>
               {[2, 3, 4, 5, 6].map((n) => (
                 <option key={n} value={n}>{n} คอลัมน์</option>
               ))}
-            </select>
-          </label>
-          <label>
-            <span className="label">การจัดวางข้อความ</span>
-            <select className="input" value={align} onChange={(e) => setAlign(e.target.value as 'center' | 'left')}>
-              <option value="center">กึ่งกลาง</option>
-              <option value="left">ชิดซ้าย</option>
-            </select>
-          </label>
-          <label>
-            <span className="label">บาร์โค้ด / QR</span>
-            <select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}>
-              <option value="none">ไม่มี</option>
-              <option value="barcode">บาร์โค้ด (Code128)</option>
-              <option value="qr">QR code</option>
-            </select>
-          </label>
-          <div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3">
-            <Check label="ตัวหนา" checked={bold} onChange={setBold} />
-            <Check label="มีขอบ" checked={border} onChange={setBorder} />
-            <Check label="แสดงชื่อร้าน" checked={showShop} onChange={setShowShop} />
-            <Check label="แสดงราคา" checked={showPrice} onChange={setShowPrice} />
-            <Check label="แสดงรหัส" checked={showCode} onChange={setShowCode} />
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button onClick={() => window.print()} className="btn-primary" disabled={stickers.length === 0}>
-            🖨️ พิมพ์ ({stickers.length} ดวง)
-          </button>
-          <span className="text-sm text-neutral-500">
+            </select></label><label><span className="label">การจัดวางข้อความ</span><select className="input" value={align} onChange={(e) => setAlign(e.target.value as 'center' | 'left')}><option value="center">กึ่งกลาง</option><option value="left">ชิดซ้าย</option></select></label><label><span className="label">บาร์โค้ด / QR</span><select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}><option value="none">ไม่มี</option><option value="barcode">บาร์โค้ด (Code128)</option><option value="qr">QR code</option></select></label><div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3"><Check label="ตัวหนา" checked={bold} onChange={setBold} /><Check label="มีขอบ" checked={border} onChange={setBorder} /><Check label="แสดงชื่อร้าน" checked={showShop} onChange={setShowShop} /><Check label="แสดงราคา" checked={showPrice} onChange={setShowPrice} /><Check label="แสดงรหัส" checked={showCode} onChange={setShowCode} /></div></div><div className="flex items-center gap-3"><button onClick={() => window.print()} className="btn-primary" disabled={stickers.length === 0}>
+             พิมพ์ ({stickers.length} ดวง)
+          </button><span className="text-sm text-neutral-500">
             ตัวอย่างด้านล่างจะถูกพิมพ์ (ส่วนอื่นจะไม่ออกกระดาษ)
-          </span>
-        </div>
-      </div>
+          </span></div></div>
 
       {/* ==== พื้นที่พิมพ์ ==== */}
-      <div className="print-area">
-        <div
+      <div className="print-area"><div
           className="flex flex-wrap gap-2"
           style={{ maxWidth: `${columns * (dim.w + 3)}mm` }}
         >
@@ -374,11 +286,9 @@ export default function StickerTool({
                     </div>
                   ))
                 ) : (
-                  <>
-                    <div style={{ fontSize: `${dim.base}px` }} className="line-clamp-2 break-words">
+                  <><div style={{ fontSize: `${dim.base}px` }} className="line-clamp-2 break-words">
                       {st.title}
-                    </div>
-                    <div className="flex items-baseline justify-between gap-1">
+                    </div><div className="flex items-baseline justify-between gap-1">
                       {st.price ? (
                         <span style={{ fontSize: `${dim.base * 1.15}px`, fontWeight: 800 }}>{st.price}</span>
                       ) : <span />}
@@ -417,10 +327,7 @@ export default function StickerTool({
               </div>
             ))
           )}
-        </div>
-      </div>
-    </div>
-  );
+        </div></div></div> );
 }
 
 function TabBtn({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
@@ -432,15 +339,12 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
       }`}
     >
       {children}
-    </button>
-  );
+    </button> );
 }
 
 function Check({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <label className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-      <input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+    <label className="flex items-center gap-2 text-sm font-medium text-neutral-700"><input type="checkbox" className="h-4 w-4" checked={checked} onChange={(e) => onChange(e.target.checked)} />
       {label}
-    </label>
-  );
+    </label> );
 }

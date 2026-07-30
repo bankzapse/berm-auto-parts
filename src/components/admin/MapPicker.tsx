@@ -41,9 +41,9 @@ export default function MapPicker({
       }).addTo(map);
       const icon = L.divIcon({
         className: 'bb-map-pin',
-        html: '<div style="font-size:26px;line-height:1">📍</div>',
-        iconSize: [26, 26],
-        iconAnchor: [13, 24],
+        html: '<div style="width:22px;height:22px;background:#b52f2f;border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 3px 8px rgba(0,0,0,.45)"></div>',
+        iconSize: [22, 22],
+        iconAnchor: [11, 22],
       });
       const marker = L.marker([startLat, startLng], { draggable: true, icon }).addTo(map);
       markerRef.current = marker;
@@ -120,7 +120,7 @@ export default function MapPicker({
           }}
         />
         <button type="button" onClick={doSearch} disabled={searching} className="btn-outline whitespace-nowrap px-4">
-          {searching ? 'ค้นหา…' : '🔍 ค้นหา'}
+          {searching ? 'ค้นหา…' : 'ค้นหา'}
         </button>
       </div>
       <div
@@ -128,7 +128,7 @@ export default function MapPicker({
         style={{ height: 320 }}
         className="w-full overflow-hidden rounded-xl border border-neutral-200"
       />
-      <p className="mt-1 text-xs text-neutral-500">คลิกบนแผนที่ หรือลากหมุด 📍 เพื่อตั้งพิกัดร้าน</p>
+      <p className="mt-1 text-xs text-neutral-500">คลิกบนแผนที่ หรือลากหมุดสีแดง เพื่อตั้งพิกัดร้าน</p>
       {msg ? <p className="mt-1 text-xs text-amber-600">{msg}</p> : null}
     </div>
   );
