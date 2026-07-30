@@ -51,25 +51,25 @@ export default function AdminNav({ role = 'OWNER' }: { role?: 'OWNER' | 'STAFF' 
             <Link
               key={l.href}
               href={l.href}
-              className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${
-                active ? 'bg-brand-700 text-white' : 'hover:bg-brand-900'
+              className={`flex items-center gap-2 rounded-lg border-l-2 px-3 py-2 text-sm font-medium ${
+                active ? 'border-accent-500 bg-brand-800 text-white' : 'border-transparent hover:bg-brand-900'
               }`}
             >
-              <span>{l.icon}</span> {l.label}
+              {l.label}
             </Link>
           );
         })}
       </nav>
       <div className="mt-auto flex flex-col gap-1 pt-3">
         <Link href="/" target="_blank" className="rounded-lg px-3 py-2 text-sm hover:bg-brand-900">
-          🌐 เปิดหน้าเว็บ
+          เปิดหน้าเว็บ ↗
         </Link>
         <button
           onClick={logout}
           disabled={out}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-sm hover:bg-brand-900"
         >
-          {out ? <Spinner className="h-4 w-4" /> : '🚪'} ออกจากระบบ
+          {out ? <Spinner className="h-4 w-4" /> : null} ออกจากระบบ
         </button>
       </div>
     </aside>
