@@ -39,7 +39,7 @@ export default function AdminNav({ role = 'OWNER' }: { role?: 'OWNER' | 'STAFF' 
   }
 
   return (
-    <aside className="flex w-full flex-col gap-1 bg-brand-950 p-3 text-brand-100 md:h-screen md:w-64 md:sticky md:top-0">
+    <aside className="flex w-full flex-col gap-1 bg-brand-950 p-3 text-brand-100 md:sticky md:top-0 md:h-screen md:w-64 md:overflow-y-auto">
       <div className="mb-2 px-2 py-3">
         <div className="text-lg font-bold text-white">เบิ้มอะไหล่ยนต์</div>
         <div className="text-xs text-brand-300">ระบบผู้ดูแล</div>
