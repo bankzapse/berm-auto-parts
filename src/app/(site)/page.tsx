@@ -71,7 +71,7 @@ export default async function HomePage() {
             <p className="mt-4 max-w-xl text-lg text-brand-100 sm:text-xl">{s.tagline}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={`tel:${tel}`} className="btn-white shadow-lg">📞 โทรเลย {s.phone2 || s.phone}</a>
-              <Link href="/products" className="btn-outline border-white text-white hover:bg-white/10">ดูสินค้าทั้งหมด →</Link>
+              <Link href="/products" className="btn-accent shadow-lg">ดูสินค้าทั้งหมด →</Link>
               {line ? (
                 <a href={line} target="_blank" rel="noopener noreferrer" className="btn text-white shadow-lg" style={{ backgroundColor: '#06C755' }}>💬 LINE</a>
               ) : null}

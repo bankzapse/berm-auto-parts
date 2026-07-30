@@ -5,13 +5,13 @@ import { lineHref, lineIsLinkable } from '@/lib/data';
 export default function TopBar({ s }: { s: Settings }) {
   const line = lineIsLinkable(s.lineId) ? lineHref(s.lineId) : '';
   return (
-    <div className="hidden bg-accent-950 text-accent-100 md:block">
+    <div className="hidden bg-brand-950 text-brand-100 md:block">
       <div className="container-x flex h-9 items-center justify-between text-xs">
         <div className="flex items-center gap-4">
           <span>🕒 {s.openHours}</span>
           {s.topBarNote ? (
             <>
-              <span className="text-accent-400">|</span>
+              <span className="text-brand-400">|</span>
               <span>{s.topBarNote}</span>
             </>
           ) : null}

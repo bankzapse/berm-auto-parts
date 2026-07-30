@@ -36,7 +36,7 @@ export default function Navbar({
               height={44}
             />
           ) : (
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-700 font-bold text-white">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent-700 font-bold text-white">
               B.B.
             </span>
           )}

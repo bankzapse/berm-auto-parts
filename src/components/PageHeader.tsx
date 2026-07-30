@@ -3,7 +3,7 @@ import Link from 'next/link';
 // หัวหน้าเพจแบบ corporate (ไล่สีแดง→น้ำเงิน) ใช้ร่วมทุกหน้าลูกค้าให้เข้าชุดกัน
 export default function PageHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-brand-900 via-brand-950 to-accent-950 text-white">
+    <section className="relative overflow-hidden bg-gradient-to-r from-brand-800 via-brand-900 to-brand-950 text-white">
       {/* เฟืองตกแต่ง หมุนช้า (transform ล้วน) */}
       <svg
         className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 animate-spin-slow text-white/5"
