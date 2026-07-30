@@ -1,9 +1,16 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import type { Settings } from '@prisma/client';
 import { Field, SaveButton, type SaveState } from '@/components/admin/ui';
 import ImageUploader from '@/components/admin/ImageUploader';
+
+// แผนที่โหลดฝั่ง client เท่านั้น (Leaflet ใช้ window)
+const MapPicker = dynamic(() => import('@/components/admin/MapPicker'), {
+  ssr: false,
+  loading: () => <div className="skeleton h-80 w-full rounded-xl" />,
+});
 
 const NAV = [
   { id: 'general', icon: '🏪', title: 'ข้อมูลทั่วไป' },
@@ -192,6 +199,16 @@ export default function SettingsForm({ initial, dbOk = true }: { initial: Settin
                 <input className="input" value={String(f.longitude)} onChange={set('longitude')} />
               </Field>
             </div>
+
+            <div>
+              <span className="label">📍 เลือกตำแหน่งบนแผนที่</span>
+              <MapPicker
+                lat={Number(f.latitude) || 18.52}
+                lng={Number(f.longitude) || 98.938}
+                onChange={(la, lo) => setF((p) => ({ ...p, latitude: la, longitude: lo }))}
+              />
+            </div>
+
             <Field label="ลิงก์ฝังแผนที่ Google (embed URL)" hint="เว้นว่างได้ ระบบจะสร้างจากพิกัด/ชื่อร้านให้อัตโนมัติ">
               <input className="input" value={f.mapEmbedUrl} onChange={set('mapEmbedUrl')} />
             </Field>
