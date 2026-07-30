@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS: Settings = {
   phone: '053524076',
   phone2: '0898554760',
   lineId: '',
+  lineQrImage: '',
   facebookUrl: '',
   addressLine: '',
   subDistrict: '',

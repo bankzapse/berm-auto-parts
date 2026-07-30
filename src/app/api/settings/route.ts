@@ -5,7 +5,7 @@ import { isOwner } from '@/lib/session';
 // ฟิลด์ที่อนุญาตให้แก้ไข (กันการยัดฟิลด์แปลกปลอม)
 const ALLOWED = [
   'shopName', 'tagline', 'shopType', 'aboutTitle', 'aboutText',
-  'phone', 'phone2', 'lineId', 'facebookUrl',
+  'phone', 'phone2', 'lineId', 'lineQrImage', 'facebookUrl',
   'addressLine', 'subDistrict', 'district', 'province', 'postalCode',
   'latitude', 'longitude', 'mapEmbedUrl', 'openHours',
   'taxId', 'docFooter', 'alertWebhookUrl',

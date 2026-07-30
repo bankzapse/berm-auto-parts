@@ -24,6 +24,7 @@ model Settings {
   phone          String   @default("053524076")
   phone2         String   @default("0898554760")
   lineId         String   @default("")
+  lineQrImage    String   @default("") // รูป QR โค้ด LINE (ให้ลูกค้าสแกนเพิ่มเพื่อน)
   facebookUrl    String   @default("")
 
   // ที่อยู่

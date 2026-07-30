@@ -137,12 +137,23 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
               <Field label="เบอร์โทร 2">
                 <input className="input" value={f.phone2} onChange={set('phone2')} />
               </Field>
-              <Field label="LINE ID / ลิงก์" hint="ใส่ LINE ID, @official, หรือลิงก์เต็ม เช่น https://lin.ee/xxxx">
-                <input className="input" value={f.lineId} onChange={set('lineId')} placeholder="@bermparts หรือ https://lin.ee/xxxx" />
+              <Field label="LINE ID / ลิงก์" hint="ลิงก์ที่ลูกค้ากดเข้าแชทได้ ควรเป็น https://lin.ee/xxxx (จากบัญชีทางการ) — เบอร์/ID เปล่าอาจกดเข้าแชทไม่ได้ ให้ใช้ QR ด้านล่างแทน">
+                <input className="input" value={f.lineId} onChange={set('lineId')} placeholder="https://lin.ee/xxxx" />
               </Field>
               <Field label="ลิงก์ Facebook">
                 <input className="input" value={f.facebookUrl} onChange={set('facebookUrl')} />
               </Field>
+            </div>
+            <div className="rounded-xl border border-[#06C755]/30 bg-[#06C755]/5 p-4">
+              <ImageUploader
+                label="รูป QR โค้ด LINE (ให้ลูกค้าสแกนเพิ่มเพื่อน)"
+                value={f.lineQrImage}
+                onChange={(v) => setF((p) => ({ ...p, lineQrImage: v }))}
+              />
+              <p className="mt-2 text-xs text-neutral-500">
+                💡 เปิดแอป LINE → โปรไฟล์ → “QR โค้ดของฉัน” → บันทึกรูป แล้วอัปโหลดที่นี่ —
+                ลูกค้าสแกนเพิ่มเพื่อนได้เลย (ใช้ได้กับ LINE ส่วนตัว ไม่ต้องมีบัญชีทางการ)
+              </p>
             </div>
           </Section>
 

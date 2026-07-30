@@ -91,6 +91,26 @@ export default async function ContactPage() {
               🗺️ นำทาง
             </a>
           </div>
+
+          {s.lineQrImage ? (
+            <div className="mt-2 flex items-center gap-4 rounded-2xl border border-[#06C755]/30 bg-[#06C755]/5 p-4">
+              <img
+                src={s.lineQrImage}
+                alt={`QR โค้ด LINE ${s.shopName}`}
+                className="h-28 w-28 flex-shrink-0 rounded-lg bg-white object-contain p-1"
+                width={112}
+                height={112}
+                loading="lazy"
+              />
+              <div>
+                <div className="font-semibold text-[#06C755]">💬 แอด LINE ร้าน</div>
+                <p className="mt-1 text-sm text-neutral-600">
+                  สแกน QR นี้ด้วยแอป LINE เพื่อสอบถาม/สั่งอะไหล่ได้เลย
+                </p>
+                {s.lineId ? <p className="mt-1 text-xs text-neutral-400">LINE: {s.lineId}</p> : null}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-neutral-200 shadow-sm">
