@@ -9,8 +9,12 @@ export default function TopBar({ s }: { s: Settings }) {
       <div className="container-x flex h-9 items-center justify-between text-xs">
         <div className="flex items-center gap-4">
           <span>🕒 {s.openHours}</span>
-          <span className="text-accent-400">|</span>
-          <span>ขายส่ง–ปลีก อะไหล่รถยนต์ · มอเตอร์ไซค์ · รถบรรทุก</span>
+          {s.topBarNote ? (
+            <>
+              <span className="text-accent-400">|</span>
+              <span>{s.topBarNote}</span>
+            </>
+          ) : null}
         </div>
         <div className="flex items-center gap-4">
           <a href={`tel:${s.phone.replace(/[^0-9+]/g, '')}`} className="hover:text-white">📞 {s.phone}</a>

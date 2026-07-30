@@ -38,6 +38,7 @@ model Settings {
   mapEmbedUrl    String   @default("")
 
   openHours      String   @default("จันทร์–เสาร์ 08:00–18:00")
+  topBarNote     String   @default("ขายส่ง–ปลีก อะไหล่รถยนต์ · มอเตอร์ไซค์ · รถบรรทุก") // ข้อความแถบบนสุด
 
   // ข้อมูลสำหรับออกเอกสาร (ใบเสร็จ/ใบวางบิล)
   taxId          String   @default("") // เลขประจำตัวผู้เสียภาษี

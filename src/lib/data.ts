@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS: Settings = {
   longitude: 98.938,
   mapEmbedUrl: '',
   openHours: 'จันทร์–เสาร์ 08:00–18:00',
+  topBarNote: 'ขายส่ง–ปลีก อะไหล่รถยนต์ · มอเตอร์ไซค์ · รถบรรทุก',
   taxId: '',
   docFooter: 'ขอบคุณที่ใช้บริการ เบิ้มอะไหล่ยนต์',
   alertWebhookUrl: '',

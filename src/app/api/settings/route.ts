@@ -7,7 +7,7 @@ const ALLOWED = [
   'shopName', 'tagline', 'shopType', 'aboutTitle', 'aboutText',
   'phone', 'phone2', 'lineId', 'lineQrImage', 'facebookUrl',
   'addressLine', 'subDistrict', 'district', 'province', 'postalCode',
-  'latitude', 'longitude', 'mapEmbedUrl', 'openHours',
+  'latitude', 'longitude', 'mapEmbedUrl', 'openHours', 'topBarNote',
   'taxId', 'docFooter', 'alertWebhookUrl',
   'heroImage', 'logoImage',
   'seoTitle', 'seoDescription', 'seoKeywords', 'ogImage',

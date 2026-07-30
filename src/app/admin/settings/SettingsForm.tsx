@@ -136,6 +136,9 @@ export default function SettingsForm({ initial, dbOk = true }: { initial: Settin
             <Field label="เวลาทำการ">
               <input className="input" value={f.openHours} onChange={set('openHours')} />
             </Field>
+            <Field label="ข้อความแถบบนสุด (top bar)" hint="ข้อความข้างเวลาทำการ เว้นว่างเพื่อซ่อน">
+              <input className="input" value={f.topBarNote} onChange={set('topBarNote')} placeholder="เช่น ขายส่ง–ปลีก อะไหล่ยนต์" />
+            </Field>
           </Section>
 
           <Section id="images" icon="🖼️" title="รูปภาพหลัก" desc="โลโก้ รูปหน้าแรก และรูปสำหรับแชร์โซเชียล">
