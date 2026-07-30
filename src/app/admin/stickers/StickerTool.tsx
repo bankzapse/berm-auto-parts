@@ -41,6 +41,8 @@ const SIZES = {
   large: { w: 80, h: 45, base: 15, label: 'ใหญ่ 80×45 มม.' },
 } as const;
 
+type SizeKey = keyof typeof SIZES | 'custom';
+
 export default function StickerTool({
   products,
   shopName,
@@ -52,15 +54,17 @@ export default function StickerTool({
 }) {
   const [mode, setMode] = useState<'custom' | 'products'>('custom');
 
-  // ตัวเลือกรูปแบบ
+  // ตัวเลือกรูปแบบ (ค่าเริ่มต้น: เล็ก 45×25, 5 คอลัมน์, ติ๊กเฉพาะ "มีขอบ")
   const [font, setFont] = useState(FONTS[0].value);
-  const [size, setSize] = useState<keyof typeof SIZES>('medium');
-  const [columns, setColumns] = useState(3);
-  const [bold, setBold] = useState(true);
+  const [size, setSize] = useState<SizeKey>('small');
+  const [customW, setCustomW] = useState(45);
+  const [customH, setCustomH] = useState(25);
+  const [columns, setColumns] = useState(5);
+  const [bold, setBold] = useState(false);
   const [border, setBorder] = useState(true);
-  const [showShop, setShowShop] = useState(true);
-  const [showPrice, setShowPrice] = useState(true);
-  const [showCode, setShowCode] = useState(true);
+  const [showShop, setShowShop] = useState(false);
+  const [showPrice, setShowPrice] = useState(false);
+  const [showCode, setShowCode] = useState(false);
   const [align, setAlign] = useState<'center' | 'left'>('center');
   const [codeType, setCodeType] = useState<'none' | 'barcode' | 'qr'>('none');
 
@@ -136,7 +140,10 @@ export default function StickerTool({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, products, selected, customLines, codeValueInput, copies, showShop, showPrice, showCode, shopName]);
 
-  const dim = SIZES[size];
+  const dim =
+    size === 'custom'
+      ? { w: Math.max(10, customW), h: Math.max(8, customH), base: Math.max(7, Math.round(Math.max(8, customH) * 0.35)) }
+      : SIZES[size];
 
   return (
     <div className="space-y-6">
@@ -254,11 +261,30 @@ export default function StickerTool({
         <div className="card grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-3">
           <label>
             <span className="label">ขนาดสติกเกอร์</span>
-            <select className="input" value={size} onChange={(e) => setSize(e.target.value as keyof typeof SIZES)}>
+            <select className="input" value={size} onChange={(e) => setSize(e.target.value as SizeKey)}>
               {Object.entries(SIZES).map(([k, v]) => (
                 <option key={k} value={k}>{v.label}</option>
               ))}
+              <option value="custom">กำหนดเอง (ระบุขนาด)</option>
             </select>
+            {size === 'custom' && (
+              <div className="mt-2 flex items-center gap-2 text-xs text-neutral-600">
+                <span>กว้าง</span>
+                <NumberInput
+                  className="w-16 rounded border border-neutral-300 px-2 py-1 text-sm"
+                  value={customW} emptyValue={45} min={10} max={200}
+                  onChange={(v) => setCustomW(v ?? 45)}
+                />
+                <span>×</span>
+                <span>สูง</span>
+                <NumberInput
+                  className="w-16 rounded border border-neutral-300 px-2 py-1 text-sm"
+                  value={customH} emptyValue={25} min={8} max={200}
+                  onChange={(v) => setCustomH(v ?? 25)}
+                />
+                <span>มม.</span>
+              </div>
+            )}
           </label>
           <label>
             <span className="label">ฟอนต์ (เลือกตัวอักษร)</span>
@@ -271,7 +297,7 @@ export default function StickerTool({
           <label>
             <span className="label">จำนวนคอลัมน์/แถว</span>
             <select className="input" value={columns} onChange={(e) => setColumns(Number(e.target.value))}>
-              {[2, 3, 4, 5].map((n) => (
+              {[2, 3, 4, 5, 6].map((n) => (
                 <option key={n} value={n}>{n} คอลัมน์</option>
               ))}
             </select>
