@@ -247,15 +247,22 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
         </div>
       </div>
 
-      {error && <p className="mt-6 rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-
-      {/* แถบบันทึกลอยแบบพรีเมียม */}
-      <div className="sticky bottom-4 z-10 mt-6 flex items-center justify-between gap-3 rounded-2xl border border-neutral-200 bg-white/90 p-3 pl-5 shadow-lg backdrop-blur">
-        <span className="hidden text-sm text-neutral-500 sm:block">แก้ไขแล้วอย่าลืมกดบันทึก การเปลี่ยนแปลงจะขึ้นหน้าเว็บทันที</span>
-        <div className="flex items-center gap-3">
-          {state === 'saved' && <span className="text-sm font-medium text-green-700">✓ บันทึกเรียบร้อย</span>}
-          <SaveButton state={state} label="บันทึกการตั้งค่า" />
-        </div>
+      {/* แถบบันทึกลอยแบบพรีเมียม — โชว์ error ตรงนี้เลยจะได้เห็นแน่นอน */}
+      <div
+        className={`sticky bottom-4 z-10 mt-6 flex items-center justify-between gap-3 rounded-2xl border bg-white/95 p-3 pl-5 shadow-lg backdrop-blur ${
+          state === 'error' ? 'border-red-300' : 'border-neutral-200'
+        }`}
+      >
+        <span className="min-w-0 flex-1 text-sm">
+          {state === 'error' ? (
+            <span className="font-medium text-red-700">⚠️ {error || 'บันทึกไม่สำเร็จ'}</span>
+          ) : state === 'saved' ? (
+            <span className="font-medium text-green-700">✓ บันทึกเรียบร้อย</span>
+          ) : (
+            <span className="hidden text-neutral-500 sm:block">แก้ไขแล้วอย่าลืมกดบันทึก การเปลี่ยนแปลงจะขึ้นหน้าเว็บทันที</span>
+          )}
+        </span>
+        <SaveButton state={state} label="บันทึกการตั้งค่า" />
       </div>
     </form>
   );
