@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Spinner } from '@/components/admin/ui';
+import { Spinner, NumberInput } from '@/components/admin/ui';
 import {
   DOC_TYPES,
   DOC_STATUS,
@@ -237,15 +237,15 @@ export default function DocumentEditor({
                       <input className="input" value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} placeholder="ชื่อรายการ" />
                     </td>
                     <td className="p-1">
-                      <input type="number" step="any" className="input text-right" value={it.quantity}
-                        onChange={(e) => updateItem(i, { quantity: Number(e.target.value) })} />
+                      <NumberInput step="any" className="input text-right" value={it.quantity}
+                        onChange={(v) => updateItem(i, { quantity: v ?? 0 })} />
                     </td>
                     <td className="p-1">
                       <input className="input" value={it.unit} onChange={(e) => updateItem(i, { unit: e.target.value })} />
                     </td>
                     <td className="p-1">
-                      <input type="number" step="0.01" className="input text-right" value={it.unitPrice}
-                        onChange={(e) => updateItem(i, { unitPrice: Number(e.target.value) })} />
+                      <NumberInput step="0.01" className="input text-right" value={it.unitPrice}
+                        onChange={(v) => updateItem(i, { unitPrice: v ?? 0 })} />
                     </td>
                     <td className="p-2 text-right font-medium text-neutral-700">
                       ฿{formatBaht((Number(it.quantity) || 0) * (Number(it.unitPrice) || 0))}
@@ -270,11 +270,11 @@ export default function DocumentEditor({
           <div className="space-y-3">
             <label>
               <span className="label">ส่วนลด (บาท)</span>
-              <input type="number" step="0.01" className="input" value={d.discount} onChange={(e) => set('discount', Number(e.target.value))} />
+              <NumberInput step="0.01" value={d.discount} onChange={(v) => set('discount', v ?? 0)} />
             </label>
             <label>
               <span className="label">ภาษีมูลค่าเพิ่ม VAT (%)</span>
-              <input type="number" step="0.01" className="input" value={d.vatRate} onChange={(e) => set('vatRate', Number(e.target.value))} placeholder="0 = ไม่มี VAT, 7 = VAT 7%" />
+              <NumberInput step="0.01" value={d.vatRate} onChange={(v) => set('vatRate', v ?? 0)} placeholder="0 = ไม่มี VAT, 7 = VAT 7%" />
             </label>
             <div className="grid grid-cols-2 gap-3">
               <label>
@@ -287,8 +287,7 @@ export default function DocumentEditor({
               </label>
               <label>
                 <span className="label">ยอดชำระแล้ว (บาท)</span>
-                <input type="number" step="0.01" className="input" value={d.paidAmount}
-                  onChange={(e) => set('paidAmount', Number(e.target.value))} />
+                <NumberInput step="0.01" value={d.paidAmount} onChange={(v) => set('paidAmount', v ?? 0)} />
               </label>
             </div>
             <label>

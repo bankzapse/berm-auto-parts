@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { barcodeDataUri } from '@/lib/barcode';
 import { qrDataUri } from '@/lib/qrcodeSvg';
+import { NumberInput } from '@/components/admin/ui';
 
 type SP = {
   id: string;
@@ -14,9 +15,13 @@ type SP = {
   brand: string;
 };
 
+// บรรทัดข้อความแบบกำหนดเอง (แต่ละบรรทัดตั้งขนาด/สี/ตัวหนาได้)
+type Line = { id: number; text: string; size: number; color: string; bold: boolean };
+
 type Sticker = {
   shopName?: string;
-  title: string; // ข้อความบนสุด (เช่น ชื่อสินค้า)
+  lines?: Line[]; // โหมดกำหนดเอง: หลายบรรทัด
+  title?: string; // โหมดสินค้า
   price?: string;
   code?: string;
   note?: string;
@@ -59,12 +64,34 @@ export default function StickerTool({
   const [align, setAlign] = useState<'center' | 'left'>('center');
   const [codeType, setCodeType] = useState<'none' | 'barcode' | 'qr'>('none');
 
-  // โหมดกำหนดเอง
-  const [customTitle, setCustomTitle] = useState('');
-  const [customPrice, setCustomPrice] = useState('');
-  const [customCode, setCustomCode] = useState('');
-  const [customNote, setCustomNote] = useState('');
+  // โหมดกำหนดเอง — เพิ่มบรรทัดได้ ตั้งขนาด/สี/ตัวหนาต่อบรรทัด
+  const lineIdRef = useRef(3);
+  const [customLines, setCustomLines] = useState<Line[]>([
+    { id: 1, text: 'ชื่อสินค้า', size: 14, color: '#000000', bold: true },
+    { id: 2, text: '฿0', size: 18, color: '#b52f2f', bold: true },
+  ]);
+  const [codeValueInput, setCodeValueInput] = useState('');
   const [copies, setCopies] = useState(6);
+
+  function addLine() {
+    setCustomLines((prev) => [...prev, { id: lineIdRef.current++, text: '', size: 12, color: '#000000', bold: false }]);
+  }
+  function updateLine(id: number, patch: Partial<Line>) {
+    setCustomLines((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+  }
+  function removeLine(id: number) {
+    setCustomLines((prev) => prev.filter((l) => l.id !== id));
+  }
+  function moveLine(id: number, dir: -1 | 1) {
+    setCustomLines((prev) => {
+      const i = prev.findIndex((l) => l.id === id);
+      const j = i + dir;
+      if (i < 0 || j < 0 || j >= prev.length) return prev;
+      const copy = [...prev];
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+      return copy;
+    });
+  }
 
   // โหมดจากสินค้า
   const [selected, setSelected] = useState<Record<string, number>>({});
@@ -85,11 +112,8 @@ export default function StickerTool({
     if (mode === 'custom') {
       const one: Sticker = {
         shopName: showShop ? shopName : undefined,
-        title: customTitle || 'ชื่อสินค้า',
-        price: showPrice ? customPrice : undefined,
-        code: showCode ? customCode : undefined,
-        note: customNote || undefined,
-        codeValue: customCode || undefined,
+        lines: customLines.filter((l) => l.text.trim() !== ''),
+        codeValue: codeValueInput || undefined,
       };
       return Array.from({ length: Math.max(1, Math.min(60, copies)) }, () => one);
     }
@@ -110,7 +134,7 @@ export default function StickerTool({
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, products, selected, customTitle, customPrice, customCode, customNote, copies, showShop, showPrice, showCode, shopName]);
+  }, [mode, products, selected, customLines, codeValueInput, copies, showShop, showPrice, showCode, shopName]);
 
   const dim = SIZES[size];
 
@@ -128,27 +152,67 @@ export default function StickerTool({
         </div>
 
         {mode === 'custom' ? (
-          <div className="card grid gap-4 p-5 sm:grid-cols-2">
-            <label className="sm:col-span-2">
-              <span className="label">ข้อความหลัก (ชื่อสินค้า)</span>
-              <input className="input" value={customTitle} onChange={(e) => setCustomTitle(e.target.value)} placeholder="เช่น ผ้าเบรกหน้า Toyota Vios" />
-            </label>
-            <label>
-              <span className="label">ราคา</span>
-              <input className="input" value={customPrice} onChange={(e) => setCustomPrice(e.target.value)} placeholder="฿550" />
-            </label>
-            <label>
-              <span className="label">รหัสสินค้า</span>
-              <input className="input" value={customCode} onChange={(e) => setCustomCode(e.target.value)} placeholder="BRK-FR" />
-            </label>
-            <label className="sm:col-span-2">
-              <span className="label">หมายเหตุ (แถวล่าง)</span>
-              <input className="input" value={customNote} onChange={(e) => setCustomNote(e.target.value)} placeholder="เช่น อะไหล่แท้" />
-            </label>
-            <label>
-              <span className="label">จำนวนดวงที่พิมพ์</span>
-              <input type="number" min={1} max={60} className="input" value={copies} onChange={(e) => setCopies(Number(e.target.value))} />
-            </label>
+          <div className="card space-y-3 p-5">
+            <div className="flex items-center justify-between">
+              <span className="label mb-0">บรรทัดข้อความ — เพิ่ม/ลบได้ ตั้งขนาด &amp; สีแต่ละบรรทัด</span>
+              <button onClick={addLine} className="btn-outline py-1.5 text-sm">➕ เพิ่มบรรทัด</button>
+            </div>
+
+            {customLines.length === 0 ? (
+              <p className="text-sm text-neutral-400">ยังไม่มีบรรทัด — กด “เพิ่มบรรทัด”</p>
+            ) : null}
+
+            <div className="space-y-2">
+              {customLines.map((ln, idx) => (
+                <div key={ln.id} className="flex flex-wrap items-center gap-2 rounded-lg border border-neutral-200 p-2">
+                  <input
+                    className="input min-w-[8rem] flex-1"
+                    value={ln.text}
+                    onChange={(e) => updateLine(ln.id, { text: e.target.value })}
+                    placeholder={`บรรทัดที่ ${idx + 1}`}
+                    style={{ fontSize: `${Math.min(ln.size, 20)}px`, color: ln.color, fontWeight: ln.bold ? 700 : 400 }}
+                  />
+                  <label className="flex items-center gap-1 text-xs text-neutral-500">
+                    ขนาด
+                    <NumberInput
+                      min={6} max={48}
+                      className="w-16 rounded border border-neutral-300 px-2 py-1 text-sm"
+                      value={ln.size}
+                      emptyValue={12}
+                      onChange={(v) => updateLine(ln.id, { size: v ?? 12 })}
+                    />
+                  </label>
+                  <label className="flex items-center gap-1 text-xs text-neutral-500" title="สีข้อความ">
+                    สี
+                    <input
+                      type="color"
+                      className="h-8 w-10 cursor-pointer rounded border border-neutral-300"
+                      value={ln.color}
+                      onChange={(e) => updateLine(ln.id, { color: e.target.value })}
+                    />
+                  </label>
+                  <label className="flex items-center gap-1 text-xs text-neutral-500">
+                    <input type="checkbox" checked={ln.bold} onChange={(e) => updateLine(ln.id, { bold: e.target.checked })} /> หนา
+                  </label>
+                  <button onClick={() => moveLine(ln.id, -1)} className="px-1 text-neutral-400 hover:text-neutral-800" title="เลื่อนขึ้น">↑</button>
+                  <button onClick={() => moveLine(ln.id, 1)} className="px-1 text-neutral-400 hover:text-neutral-800" title="เลื่อนลง">↓</button>
+                  <button onClick={() => removeLine(ln.id)} className="px-1 text-red-500 hover:text-red-700" title="ลบบรรทัด">✕</button>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {codeType !== 'none' ? (
+                <label>
+                  <span className="label">ค่าบาร์โค้ด / QR</span>
+                  <input className="input" value={codeValueInput} onChange={(e) => setCodeValueInput(e.target.value)} placeholder="เช่น 8850123456789 หรือ BRK-FR" />
+                </label>
+              ) : null}
+              <label>
+                <span className="label">จำนวนดวงที่พิมพ์</span>
+                <NumberInput min={1} max={60} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} />
+              </label>
+            </div>
           </div>
         ) : (
           <div className="card p-5">
@@ -170,15 +234,13 @@ export default function StickerTool({
                         {p.sku || '—'} • {priceText(p) || 'ไม่มีราคา'}
                       </div>
                     </div>
-                    <input
-                      type="number"
+                    <NumberInput
                       min={0}
                       max={60}
                       className="w-20 rounded-lg border border-neutral-300 px-2 py-1 text-sm"
-                      value={selected[p.id] || 0}
-                      onChange={(e) =>
-                        setSelected((prev) => ({ ...prev, [p.id]: Math.max(0, Number(e.target.value)) }))
-                      }
+                      value={selected[p.id] ?? 0}
+                      emptyValue={0}
+                      onChange={(v) => setSelected((prev) => ({ ...prev, [p.id]: v ?? 0 }))}
                     />
                     <span className="text-xs text-neutral-400">ดวง</span>
                   </div>
@@ -275,24 +337,38 @@ export default function StickerTool({
                     {st.shopName}
                   </div>
                 ) : null}
-                <div style={{ fontSize: `${dim.base}px` }} className="line-clamp-2 break-words">
-                  {st.title}
-                </div>
-                <div className="flex items-baseline justify-between gap-1">
-                  {st.price ? (
-                    <span style={{ fontSize: `${dim.base * 1.15}px`, fontWeight: 800 }}>{st.price}</span>
-                  ) : <span />}
-                  {st.code ? (
-                    <span style={{ fontSize: `${dim.base * 0.7}px` }} className="text-neutral-500">
-                      {st.code}
-                    </span>
-                  ) : null}
-                </div>
-                {st.note ? (
-                  <div style={{ fontSize: `${dim.base * 0.7}px` }} className="truncate text-neutral-500">
-                    {st.note}
-                  </div>
-                ) : null}
+                {st.lines ? (
+                  st.lines.map((ln, j) => (
+                    <div
+                      key={j}
+                      style={{ fontSize: `${ln.size}px`, color: ln.color, fontWeight: ln.bold ? 700 : 400 }}
+                      className="break-words leading-tight"
+                    >
+                      {ln.text}
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div style={{ fontSize: `${dim.base}px` }} className="line-clamp-2 break-words">
+                      {st.title}
+                    </div>
+                    <div className="flex items-baseline justify-between gap-1">
+                      {st.price ? (
+                        <span style={{ fontSize: `${dim.base * 1.15}px`, fontWeight: 800 }}>{st.price}</span>
+                      ) : <span />}
+                      {st.code ? (
+                        <span style={{ fontSize: `${dim.base * 0.7}px` }} className="text-neutral-500">
+                          {st.code}
+                        </span>
+                      ) : null}
+                    </div>
+                    {st.note ? (
+                      <div style={{ fontSize: `${dim.base * 0.7}px` }} className="truncate text-neutral-500">
+                        {st.note}
+                      </div>
+                    ) : null}
+                  </>
+                )}
                 {codeType !== 'none' && st.codeValue ? (
                   <div className="mt-0.5 flex justify-center">
                     {codeType === 'barcode' ? (

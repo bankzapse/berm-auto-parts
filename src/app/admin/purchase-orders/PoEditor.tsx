@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Spinner } from '@/components/admin/ui';
+import { Spinner, NumberInput } from '@/components/admin/ui';
 import { formatBaht } from '@/lib/documents';
 
 type ProductLite = { id: string; name: string; sku: string; unit: string; cost: number | null };
@@ -167,9 +167,9 @@ export default function PoEditor({
               {d.items.map((it, i) => (
                 <tr key={i} className="border-t border-neutral-100">
                   <td className="p-1"><input className="input" value={it.name} onChange={(e) => updateItem(i, { name: e.target.value })} /></td>
-                  <td className="p-1"><input type="number" step="any" className="input text-right" value={it.quantity} onChange={(e) => updateItem(i, { quantity: Number(e.target.value) })} /></td>
+                  <td className="p-1"><NumberInput step="any" className="input text-right" value={it.quantity} onChange={(v) => updateItem(i, { quantity: v ?? 0 })} /></td>
                   <td className="p-1"><input className="input" value={it.unit} onChange={(e) => updateItem(i, { unit: e.target.value })} /></td>
-                  <td className="p-1"><input type="number" step="0.01" className="input text-right" value={it.unitCost} onChange={(e) => updateItem(i, { unitCost: Number(e.target.value) })} /></td>
+                  <td className="p-1"><NumberInput step="0.01" className="input text-right" value={it.unitCost} onChange={(v) => updateItem(i, { unitCost: v ?? 0 })} /></td>
                   <td className="p-2 text-right font-medium">฿{formatBaht((Number(it.quantity) || 0) * (Number(it.unitCost) || 0))}</td>
                   <td className="p-1 text-center"><button onClick={() => removeItem(i)} className="text-red-500 hover:text-red-700">✕</button></td>
                 </tr>

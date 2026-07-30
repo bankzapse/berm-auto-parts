@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useEffect } from 'react';
 import { formatBaht } from '@/lib/documents';
-import { Spinner } from '@/components/admin/ui';
+import { Spinner, NumberInput } from '@/components/admin/ui';
 import ThermalReceipt, { type ReceiptData } from '@/components/admin/ThermalReceipt';
 
 type P = { id: string; name: string; sku: string; barcode: string; oem: string; fitment: string; price: number; unit: string; stock: number; category: string };
@@ -83,10 +83,11 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
   }
 
   function setQty(i: number, qty: number) {
-    setCart((prev) => prev.map((it, idx) => (idx === i ? { ...it, qty: Math.max(1, qty) } : it)));
+    // ไม่ clamp ตรงนี้ (ให้พิมพ์/ลบได้อิสระ) — ปุ่ม −/checkout จะกันค่าต่ำกว่า 1 เอง
+    setCart((prev) => prev.map((it, idx) => (idx === i ? { ...it, qty } : it)));
   }
   function setPrice(i: number, price: number) {
-    setCart((prev) => prev.map((it, idx) => (idx === i ? { ...it, price: Math.max(0, price) } : it)));
+    setCart((prev) => prev.map((it, idx) => (idx === i ? { ...it, price } : it)));
   }
   function removeItem(i: number) {
     setCart((prev) => prev.filter((_, idx) => idx !== i));
@@ -109,8 +110,8 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
         name: it.name,
         sku: it.sku,
         unit: it.unit,
-        quantity: it.qty,
-        unitPrice: it.price,
+        quantity: Math.max(1, it.qty || 1),
+        unitPrice: Math.max(0, it.price || 0),
       }));
       const paidAmount = payMethod === 'credit' ? paid : total;
       const res = await fetch('/api/documents', {
@@ -240,21 +241,21 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-sm font-medium">{it.name}</div>
                       <div className="mt-1 flex items-center gap-1">
-                        <button onClick={() => setQty(i, it.qty - 1)} className="h-6 w-6 rounded bg-neutral-100 font-bold">−</button>
-                        <input
-                          type="number"
+                        <button onClick={() => setQty(i, Math.max(1, it.qty - 1))} className="h-6 w-6 rounded bg-neutral-100 font-bold">−</button>
+                        <NumberInput
                           className="w-12 rounded border border-neutral-200 px-1 text-center text-sm"
                           value={it.qty}
-                          onChange={(e) => setQty(i, Number(e.target.value))}
+                          emptyValue={1}
+                          onChange={(v) => setQty(i, v ?? 1)}
                         />
                         <button onClick={() => setQty(i, it.qty + 1)} className="h-6 w-6 rounded bg-neutral-100 font-bold">+</button>
                         <span className="text-xs text-neutral-400">×</span>
-                        <input
-                          type="number"
+                        <NumberInput
                           step="0.01"
                           className="w-20 rounded border border-neutral-200 px-1 text-right text-sm"
                           value={it.price}
-                          onChange={(e) => setPrice(i, Number(e.target.value))}
+                          emptyValue={0}
+                          onChange={(v) => setPrice(i, v ?? 0)}
                         />
                       </div>
                     </div>
@@ -271,8 +272,8 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-neutral-600">ส่วนลด</span>
-                <input type="number" step="0.01" className="w-24 rounded border border-neutral-300 px-2 py-1 text-right"
-                  value={discount} onChange={(e) => setDiscount(Number(e.target.value))} />
+                <NumberInput step="0.01" className="w-24 rounded border border-neutral-300 px-2 py-1 text-right"
+                  value={discount} emptyValue={0} onChange={(v) => setDiscount(v ?? 0)} />
               </div>
               <div className="flex justify-between border-t border-neutral-200 pt-2 text-lg font-bold text-brand-800">
                 <span>ยอดสุทธิ</span><span>฿{formatBaht(total)}</span>

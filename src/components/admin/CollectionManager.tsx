@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Field, SaveButton, Spinner, type SaveState } from './ui';
+import { Field, SaveButton, Spinner, NumberInput, type SaveState } from './ui';
 import ImageUploader from './ImageUploader';
 
 export type FieldDef = {
@@ -226,13 +226,12 @@ function renderInput(fd: FieldDef, value: unknown, onChange: (v: unknown) => voi
     case 'price':
       return (
         <Field label={fd.label} hint={fd.hint}>
-          <input
-            type="number"
+          <NumberInput
             step={fd.type === 'price' ? '0.01' : '1'}
-            className="input"
-            value={value === null || value === undefined ? '' : String(value)}
+            emptyValue={fd.type === 'price' ? null : 0}
+            value={value === undefined ? null : (value as number | null)}
             placeholder={fd.placeholder}
-            onChange={(e) => onChange(e.target.value === '' ? (fd.type === 'price' ? null : 0) : Number(e.target.value))}
+            onChange={(v) => onChange(v)}
           />
         </Field>
       );

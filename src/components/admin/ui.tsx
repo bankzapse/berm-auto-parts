@@ -1,5 +1,68 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+
+// ช่องกรอกตัวเลขที่ "ลบให้ว่างได้" (แก้ปัญหาช่อง 0 ลบไม่ออก)
+// เก็บ buffer เป็น string ระหว่างพิมพ์ แล้วส่งค่าตัวเลขออกไป (ว่าง = emptyValue)
+export function NumberInput({
+  value,
+  onChange,
+  emptyValue = 0,
+  className = 'input',
+  min,
+  max,
+  step,
+  placeholder,
+  disabled,
+}: {
+  value: number | null;
+  onChange: (v: number | null) => void;
+  emptyValue?: number | null;
+  className?: string;
+  min?: number;
+  max?: number;
+  step?: number | string;
+  placeholder?: string;
+  disabled?: boolean;
+}) {
+  const [buf, setBuf] = useState<string>(value == null ? '' : String(value));
+  const emittedRef = useRef<number | null>(value);
+
+  // ซิงก์ buffer เมื่อค่าถูกเปลี่ยนจากภายนอก (ไม่ใช่จากการพิมพ์ในช่องนี้)
+  useEffect(() => {
+    if (value !== emittedRef.current) {
+      emittedRef.current = value;
+      setBuf(value == null ? '' : String(value));
+    }
+  }, [value]);
+
+  return (
+    <input
+      type="number"
+      inputMode="decimal"
+      className={className}
+      min={min}
+      max={max}
+      step={step}
+      placeholder={placeholder}
+      disabled={disabled}
+      value={buf}
+      onChange={(e) => {
+        const s = e.target.value;
+        setBuf(s);
+        const next = s === '' || s === '-' ? emptyValue : Number(s);
+        const val = next != null && Number.isNaN(next) ? emptyValue : next;
+        emittedRef.current = val;
+        onChange(val);
+      }}
+      onBlur={() => {
+        // ออกจากช่องแล้วยังว่าง → โชว์ค่าจริงกลับมา (กันช่องว่างค้าง)
+        if (buf === '' || buf === '-') setBuf(emptyValue == null ? '' : String(emptyValue));
+      }}
+    />
+  );
+}
+
 export function Spinner({ className = 'h-5 w-5' }: { className?: string }) {
   return (
     <svg className={`${className} animate-spin`} viewBox="0 0 24 24" fill="none">
