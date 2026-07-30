@@ -225,7 +225,7 @@ export default async function HomePage() {
               <Link
                 key={k}
                 href="/products"
-                className="rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-transform duration-150 hover:-translate-y-0.5 hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700"
+                className="rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-transform duration-150 hover:-translate-y-0.5 hover:border-accent-400 hover:bg-accent-50 hover:text-accent-800"
               >
                 {k}
               </Link>

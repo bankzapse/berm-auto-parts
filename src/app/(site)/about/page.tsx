@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getSettings, getTeam, getFeatures, formatAddress } from '@/lib/data';
+import PageHeader from '@/components/PageHeader';
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
@@ -13,11 +14,9 @@ export default async function AboutPage() {
   const [s, team, features] = await Promise.all([getSettings(), getTeam(), getFeatures()]);
 
   return (
-    <div className="container-x py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-800">{s.aboutTitle}</h1>
-      </header>
-
+    <>
+      <PageHeader title={s.aboutTitle} subtitle={s.tagline} />
+      <div className="container-x py-10">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <p className="whitespace-pre-line leading-relaxed text-neutral-700">{s.aboutText}</p>
@@ -79,6 +78,7 @@ export default async function AboutPage() {
           </div>
         </section>
       )}
-    </div>
+      </div>
+    </>
   );
 }

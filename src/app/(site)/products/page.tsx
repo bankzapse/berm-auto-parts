@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getCategoriesWithProducts, getSettings } from '@/lib/data';
 import ProductCard from '@/components/ProductCard';
+import PageHeader from '@/components/PageHeader';
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
@@ -22,14 +23,9 @@ export default async function ProductsPage({
   const shown = active === 'all' ? categories : categories.filter((c) => c.slug === active);
 
   return (
-    <div className="container-x py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-800">สินค้า / อะไหล่</h1>
-        <p className="mt-2 text-neutral-600">
-          เลือกดูอะไหล่ตามหมวด • มีทั้งอะไหล่แท้และเทียบ ราคาถูก มีของพร้อมส่ง
-        </p>
-      </header>
-
+    <>
+      <PageHeader title="สินค้า / อะไหล่" subtitle="เลือกดูอะไหล่ตามหมวด • มีทั้งอะไหล่แท้และเทียบ ราคาถูก มีของพร้อมส่ง" />
+      <div className="container-x py-10">
       {/* ตัวกรองหมวด */}
       <div className="mb-8 flex flex-wrap gap-2">
         <FilterChip href="/products" label="ทั้งหมด" active={active === 'all'} />
@@ -70,7 +66,8 @@ export default async function ProductsPage({
           )}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 

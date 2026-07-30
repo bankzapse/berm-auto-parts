@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getGallery, getSettings } from '@/lib/data';
+import PageHeader from '@/components/PageHeader';
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
@@ -12,12 +13,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function GalleryPage() {
   const gallery = await getGallery();
   return (
-    <div className="container-x py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-800">ผลงาน & แกลเลอรี</h1>
-        <p className="mt-2 text-neutral-600">ภาพสินค้า บรรยากาศร้าน และงานที่ผ่านมา</p>
-      </header>
-
+    <>
+      <PageHeader title="ผลงาน & แกลเลอรี" subtitle="ภาพสินค้า บรรยากาศร้าน และงานที่ผ่านมา" />
+      <div className="container-x py-10">
       {gallery.length === 0 ? (
         <p className="rounded-xl border border-dashed border-neutral-300 p-10 text-center text-neutral-500">
           ยังไม่มีรูปในแกลเลอรี
@@ -39,6 +37,7 @@ export default async function GalleryPage() {
           ))}
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

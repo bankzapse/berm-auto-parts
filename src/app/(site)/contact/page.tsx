@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getSettings, formatAddress, lineHref, lineIsLinkable } from '@/lib/data';
+import PageHeader from '@/components/PageHeader';
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
@@ -23,12 +24,9 @@ export default async function ContactPage() {
       : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.shopName + ' ' + address)}`;
 
   return (
-    <div className="container-x py-10">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-800">ติดต่อเรา</h1>
-        <p className="mt-2 text-neutral-600">โทรสอบถามอะไหล่ หรือแวะที่ร้านได้เลย</p>
-      </header>
-
+    <>
+      <PageHeader title="ติดต่อเรา" subtitle="โทรสอบถามอะไหล่ หรือแวะที่ร้านได้เลย" />
+      <div className="container-x py-10">
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="space-y-4">
           <InfoRow icon="🏪" label="ร้าน" value={s.shopName} />
@@ -128,7 +126,8 @@ export default async function ContactPage() {
           />
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
