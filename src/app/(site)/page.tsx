@@ -67,10 +67,7 @@ export default async function HomePage() {
 
         <div className="container-x relative py-20 sm:py-28">
           <div className="max-w-2xl animate-fade-up">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium backdrop-blur">
-              <span className="h-2 w-2 animate-float rounded-full bg-green-400" /> เปิดแล้ววันนี้ • อ.ป่าซาง จ.ลำพูน
-            </span>
-            <h1 className="mt-5 text-4xl font-extrabold leading-tight drop-shadow sm:text-6xl">{s.shopName}</h1>
+            <h1 className="text-4xl font-extrabold leading-tight drop-shadow sm:text-6xl">{s.shopName}</h1>
             <p className="mt-4 max-w-xl text-lg text-brand-100 sm:text-xl">{s.tagline}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a href={`tel:${tel}`} className="btn-white shadow-lg">📞 โทรเลย {s.phone2 || s.phone}</a>
