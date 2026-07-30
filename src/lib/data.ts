@@ -139,6 +139,13 @@ export async function getRecentMovements(take = 30) {
   }
 }
 
+// เช็กว่าลิงก์ LINE "กดเข้าแชทได้จริงสำหรับคนอื่น" ไหม
+// (ลิงก์เต็ม lin.ee/line.me หรือ @official ใช้ได้ — เบอร์/ID เปล่าไม่ชัวร์ ให้ใช้ QR แทน)
+export function lineIsLinkable(lineId: string): boolean {
+  const v = (lineId || '').trim();
+  return /^https?:\/\//i.test(v) || v.startsWith('@');
+}
+
 // สร้างลิงก์ LINE จากค่าที่กรอก (รองรับทั้งลิงก์เต็ม, @official, หรือ ID ธรรมดา)
 export function lineHref(lineId: string): string {
   const v = (lineId || '').trim();

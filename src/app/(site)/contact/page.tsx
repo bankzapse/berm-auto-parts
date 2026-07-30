@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getSettings, formatAddress, lineHref } from '@/lib/data';
+import { getSettings, formatAddress, lineHref, lineIsLinkable } from '@/lib/data';
 
 export async function generateMetadata(): Promise<Metadata> {
   const s = await getSettings();
@@ -54,14 +54,18 @@ export default async function ContactPage() {
               icon="💬"
               label="LINE"
               value={
-                <a
-                  href={lineHref(s.lineId)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-medium text-[#06C755] underline"
-                >
-                  {s.lineId} (แชทเลย)
-                </a>
+                lineIsLinkable(s.lineId) ? (
+                  <a
+                    href={lineHref(s.lineId)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-[#06C755] underline"
+                  >
+                    {s.lineId} (แชทเลย)
+                  </a>
+                ) : (
+                  <span>{s.lineId}</span>
+                )
               }
             />
           ) : null}
@@ -71,7 +75,7 @@ export default async function ContactPage() {
             <a href={`tel:${(s.phone2 || s.phone).replace(/[^0-9+]/g, '')}`} className="btn-primary">
               📞 โทรเลย
             </a>
-            {s.lineId ? (
+            {lineIsLinkable(s.lineId) ? (
               <a
                 href={lineHref(s.lineId)}
                 target="_blank"

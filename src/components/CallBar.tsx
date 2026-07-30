@@ -1,10 +1,10 @@
 import type { Settings } from '@prisma/client';
-import { lineHref } from '@/lib/data';
+import { lineHref, lineIsLinkable } from '@/lib/data';
 
 // แถบชวนโทร ลอยด้านล่างบนมือถือ — แสดงเสมอ ไม่พึ่ง JS/opacity
 export default function CallBar({ s }: { s: Settings }) {
   const tel = (s.phone2 || s.phone).replace(/[^0-9+]/g, '');
-  const line = lineHref(s.lineId);
+  const line = lineIsLinkable(s.lineId) ? lineHref(s.lineId) : '';
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-brand-200 bg-white/95 p-2 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] backdrop-blur md:hidden">
       <div className="flex gap-2">

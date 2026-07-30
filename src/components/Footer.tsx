@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Settings } from '@prisma/client';
-import { formatAddress, lineHref } from '@/lib/data';
+import { formatAddress, lineHref, lineIsLinkable } from '@/lib/data';
 
 export default function Footer({ s }: { s: Settings }) {
   const tel = (s.phone2 || s.phone).replace(/[^0-9+]/g, '');
@@ -33,9 +33,13 @@ export default function Footer({ s }: { s: Settings }) {
             {s.lineId ? (
               <li>
                 💬 LINE:{' '}
-                <a href={lineHref(s.lineId)} target="_blank" rel="noopener noreferrer" className="hover:text-white">
-                  {s.lineId}
-                </a>
+                {lineIsLinkable(s.lineId) ? (
+                  <a href={lineHref(s.lineId)} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                    {s.lineId}
+                  </a>
+                ) : (
+                  <span>{s.lineId}</span>
+                )}
               </li>
             ) : null}
             <li>🕒 {s.openHours}</li>
