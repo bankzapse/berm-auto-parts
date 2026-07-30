@@ -1,0 +1,202 @@
+// Prisma schema — เบิ้มอะไหล่ยนต์
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  // url = pooler (6543, pgbouncer) สำหรับ runtime บน Vercel
+  url       = env("DATABASE_URL")
+  // directUrl = direct (5432) สำหรับ migrate / db push
+  directUrl = env("DIRECT_URL")
+}
+
+// ข้อมูลร้าน + SEO (มีแถวเดียว ใช้ id = "singleton")
+model Settings {
+  id             String   @id @default("singleton")
+  shopName       String   @default("เบิ้มอะไหล่ยนต์")
+  tagline        String   @default("จำหน่ายอะไหล่รถยนต์ มอเตอร์ไซค์ รถบรรทุก ครบ จบ ราคาถูก")
+  shopType       String   @default("อะไหล่รถยนต์ / มอเตอร์ไซค์ / รถบรรทุก")
+  aboutTitle     String   @default("เกี่ยวกับเบิ้มอะไหล่ยนต์")
+  aboutText      String   @default("")
+
+  // ติดต่อ
+  phone          String   @default("053524076")
+  phone2         String   @default("0898554760")
+  lineId         String   @default("")
+  facebookUrl    String   @default("")
+
+  // ที่อยู่
+  addressLine    String   @default("")
+  subDistrict    String   @default("")
+  district       String   @default("ป่าซาง")
+  province       String   @default("ลำพูน")
+  postalCode     String   @default("51120")
+  latitude       Float    @default(18.520)
+  longitude      Float    @default(98.938)
+  mapEmbedUrl    String   @default("")
+
+  openHours      String   @default("จันทร์–เสาร์ 08:00–18:00")
+
+  // ข้อมูลสำหรับออกเอกสาร (ใบเสร็จ/ใบวางบิล)
+  taxId          String   @default("") // เลขประจำตัวผู้เสียภาษี
+  docFooter      String   @default("ขอบคุณที่ใช้บริการ เบิ้มอะไหล่ยนต์")
+
+  // จุดเด่น/สถิติ (แสดงหน้าแรก)
+  heroImage      String   @default("")
+  logoImage      String   @default("")
+
+  // SEO
+  seoTitle       String   @default("")
+  seoDescription String   @default("")
+  seoKeywords    String   @default("")
+  ogImage        String   @default("")
+
+  updatedAt      DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String    @default("")
+  icon        String    @default("")
+  image       String    @default("")
+  order       Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  slug        String    @unique @default(cuid())
+  name        String
+  description String    @default("")
+  price       Float?    // ราคา (บาท) — null = สอบถาม
+  priceLabel  String    @default("") // เช่น "เริ่มต้น", "/ชิ้น"
+  brand       String    @default("") // แท้ / เทียบ / ยี่ห้อ
+  sku         String    @default("") // รหัสสินค้า (ใช้กับสติกเกอร์)
+  cost        Float?    // ต้นทุน (บาท) — สำหรับคำนวณกำไร
+  image       String    @default("")
+  inStock     Boolean   @default(true)
+  featured    Boolean   @default(false)
+  stock       Int       @default(0)   // จำนวนคงเหลือในสต็อก
+  lowStock    Int       @default(0)   // จุดเตือนสต็อกต่ำ
+  unit        String    @default("ชิ้น") // หน่วยนับ
+  order       Int       @default(0)
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId  String?
+  movements   StockMovement[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum MovementType {
+  IN     // รับเข้า
+  OUT    // ตัดออก/ขาย
+  ADJUST // ปรับปรุงจากการนับสต็อก
+}
+
+// ประวัติการเคลื่อนไหวสต็อก (เข้า-ออก-ปรับ)
+model StockMovement {
+  id         String       @id @default(cuid())
+  product    Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  type       MovementType
+  quantity   Int          // จำนวนที่เปลี่ยน (บวกเสมอ)
+  balance    Int          @default(0) // ยอดคงเหลือหลังทำรายการ
+  unitCost   Float?       // ต้นทุนต่อหน่วย (ตอนรับเข้า)
+  note       String       @default("")
+  refDoc     String       @default("") // อ้างอิงเลขที่เอกสาร
+  createdAt  DateTime     @default(now())
+
+  @@index([productId])
+  @@index([createdAt])
+}
+
+enum DocType {
+  RECEIPT    // ใบเสร็จรับเงิน
+  INVOICE    // ใบวางบิล/ใบแจ้งหนี้
+  QUOTATION  // ใบเสนอราคา
+}
+
+enum DocStatus {
+  DRAFT
+  ISSUED
+  PAID
+  CANCELLED
+}
+
+// เอกสารการขาย: ใบเสร็จ / ใบวางบิล / ใบเสนอราคา
+model Document {
+  id             String         @id @default(cuid())
+  docNumber      String         @unique
+  type           DocType        @default(RECEIPT)
+  status         DocStatus      @default(ISSUED)
+  issueDate      DateTime       @default(now())
+  dueDate        DateTime?
+
+  customerName   String         @default("")
+  customerAddress String        @default("")
+  customerPhone  String         @default("")
+  customerTaxId  String         @default("")
+
+  note           String         @default("")
+  discount       Float          @default(0)  // ส่วนลด (บาท)
+  vatRate        Float          @default(0)  // อัตรา VAT % (0 = ไม่มี)
+  subtotal       Float          @default(0)
+  vatAmount      Float          @default(0)
+  total          Float          @default(0)
+  stockDeducted  Boolean        @default(false)
+
+  items          DocumentItem[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([type])
+  @@index([issueDate])
+}
+
+model DocumentItem {
+  id          String   @id @default(cuid())
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  documentId  String
+  productId   String?
+  name        String
+  sku         String   @default("")
+  unit        String   @default("ชิ้น")
+  quantity    Float    @default(1)
+  unitPrice   Float    @default(0)
+  amount      Float    @default(0)
+  order       Int      @default(0)
+
+  @@index([documentId])
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  url       String
+  caption   String   @default("")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model TeamMember {
+  id        String   @id @default(cuid())
+  name      String
+  role      String   @default("")
+  bio       String   @default("")
+  image     String   @default("")
+  phone     String   @default("")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Feature {
+  id        String   @id @default(cuid())
+  title     String
+  description String @default("")
+  icon      String   @default("") // ชื่อ emoji หรือข้อความสั้น
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
