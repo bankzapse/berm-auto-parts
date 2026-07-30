@@ -138,6 +138,15 @@ export async function getRecentMovements(take = 30) {
   }
 }
 
+// สร้างลิงก์ LINE จากค่าที่กรอก (รองรับทั้งลิงก์เต็ม, @official, หรือ ID ธรรมดา)
+export function lineHref(lineId: string): string {
+  const v = (lineId || '').trim();
+  if (!v) return '';
+  if (/^https?:\/\//i.test(v)) return v; // ลิงก์เต็ม เช่น https://lin.ee/xxxx
+  if (v.startsWith('@')) return `https://line.me/R/ti/p/${encodeURIComponent(v)}`; // Official Account
+  return `https://line.me/ti/p/~${encodeURIComponent(v)}`; // LINE ID ส่วนตัว
+}
+
 // รวมที่อยู่เป็นข้อความเดียว
 export function formatAddress(s: Settings): string {
   const parts = [

@@ -86,8 +86,8 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
           <Field label="เบอร์โทร 2">
             <input className="input" value={f.phone2} onChange={set('phone2')} />
           </Field>
-          <Field label="LINE ID">
-            <input className="input" value={f.lineId} onChange={set('lineId')} />
+          <Field label="LINE ID / ลิงก์" hint="ใส่ LINE ID, @official, หรือลิงก์เต็ม เช่น https://lin.ee/xxxx">
+            <input className="input" value={f.lineId} onChange={set('lineId')} placeholder="@bermparts หรือ https://lin.ee/xxxx" />
           </Field>
           <Field label="ลิงก์ Facebook">
             <input className="input" value={f.facebookUrl} onChange={set('facebookUrl')} />
