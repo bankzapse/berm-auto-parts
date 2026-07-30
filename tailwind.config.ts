@@ -34,10 +34,25 @@ const config: Config = {
           '0%': { transform: 'translateY(16px)' },
           '100%': { transform: 'translateY(0)' },
         },
+        // ทุก keyframe ใช้ transform ล้วน ไม่แตะ opacity (เนื้อหาต้องแสดงเสมอ)
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        float: {
+          '0%,100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
       },
       animation: {
-        // ใช้ transform เท่านั้น ไม่แตะ opacity (กันรูปหายตอน JS ไม่ทำงาน)
         'fade-up': 'fade-up 0.5s ease-out both',
+        marquee: 'marquee 26s linear infinite',
+        'spin-slow': 'spin-slow 14s linear infinite',
+        float: 'float 4s ease-in-out infinite',
       },
     },
   },
