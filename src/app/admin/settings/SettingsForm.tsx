@@ -73,17 +73,24 @@ export default function SettingsForm({ initial, dbOk = true }: { initial: Settin
 
   return (
     <form onSubmit={save}>
-      {/* หัวหน้าเพจแบบพรีเมียม */}
-      <header className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-brand-800 to-brand-950 p-6 text-white shadow-md sm:p-8">
-        <div className="flex items-center gap-4">
+      {/* หัวหน้าเพจแบบพรีเมียม — รูปอะไหล่จาง + เงา */}
+      <header className="relative mb-6 overflow-hidden rounded-2xl p-6 text-white shadow-lg sm:p-8">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=1200&q=55"
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-800/95 via-brand-900/95 to-brand-950/95" />
+        <div className="relative flex items-center gap-4">
           {f.logoImage ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={f.logoImage} alt="" className="h-14 w-14 rounded-full border-2 border-white/30 object-cover" />
+            <img src={f.logoImage} alt="" className="h-14 w-14 rounded-full border-2 border-white/30 object-cover shadow-lg" />
           ) : (
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-lg font-bold">B.B.</span>
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent-700 text-lg font-bold shadow-lg">B.B.</span>
           )}
           <div>
-            <h1 className="text-2xl font-bold">ข้อมูลร้าน & SEO</h1>
+            <h1 className="text-2xl font-bold drop-shadow">ข้อมูลร้าน & SEO</h1>
             <p className="mt-1 text-sm text-brand-100">ตั้งค่าข้อมูลร้าน การติดต่อ และการค้นหาบน Google ให้ครบถ้วน</p>
           </div>
         </div>
@@ -106,9 +113,9 @@ export default function SettingsForm({ initial, dbOk = true }: { initial: Settin
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:bg-brand-50 hover:text-brand-800"
+              className="flex items-center gap-2 rounded-lg border-l-2 border-transparent px-3 py-2 text-sm font-medium text-neutral-600 transition-colors hover:border-accent-500 hover:bg-brand-50 hover:text-brand-800"
             >
-              <span>{s.icon}</span> {s.title}
+              {s.title}
             </a>
           ))}
         </nav>
@@ -300,23 +307,20 @@ export default function SettingsForm({ initial, dbOk = true }: { initial: Settin
 
 function Section({
   id,
-  icon,
   title,
   desc,
   children,
 }: {
   id: string;
-  icon: string;
+  icon?: string;
   title: string;
   desc?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-6 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm">
+    <section id={id} className="scroll-mt-6 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-md">
       <header className="flex items-center gap-3 border-b border-neutral-100 bg-gradient-to-r from-brand-50 to-white px-5 py-4">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-700 text-lg text-white shadow-sm">
-          {icon}
-        </span>
+        <span className="h-9 w-1.5 rounded-full bg-accent-500" />
         <div>
           <h2 className="font-bold text-brand-900">{title}</h2>
           {desc ? <p className="text-xs text-neutral-500">{desc}</p> : null}

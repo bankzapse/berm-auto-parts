@@ -18,6 +18,15 @@ const IMG = {
   cta: 'https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1600&q=70', // เติมน้ำมันเครื่อง
 };
 
+// รูปอะไหล่ฟรี (ยืนยันแล้ว) วนใส่การ์ดหมวด — แอดมินอัปรูปต่อหมวดทับได้
+const CAT_IMG = [
+  'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=600&q=65',
+  'https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=600&q=65',
+  'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?auto=format&fit=crop&w=600&q=65',
+  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=600&q=65',
+  'https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=600&q=65',
+];
+
 const BRANDS = ['TOYOTA', 'ISUZU', 'HONDA', 'NISSAN', 'MITSUBISHI', 'MAZDA', 'FORD', 'CHEVROLET', 'SUZUKI', 'HINO', 'YAMAHA', 'HONDA'];
 
 export default async function HomePage() {
@@ -42,10 +51,10 @@ export default async function HomePage() {
   ]).slice(0, 16);
 
   const stats = [
-    { icon: '🔧', value: '1,000+', label: 'รายการอะไหล่' },
-    { icon: '✅', value: 'แท้ & เทียบ', label: 'มีให้เลือกครบ' },
-    { icon: '📦', value: 'พร้อมส่ง', label: 'ของในสต๊อก' },
-    { icon: '📍', value: 'ป่าซาง', label: 'จ.ลำพูน' },
+    { value: '1,000+', label: 'รายการอะไหล่' },
+    { value: 'แท้ & เทียบ', label: 'มีให้เลือกครบ' },
+    { value: 'พร้อมส่ง', label: 'ของในสต๊อก' },
+    { value: 'ป่าซาง', label: 'จ.ลำพูน' },
   ];
 
   return (
@@ -88,9 +97,9 @@ export default async function HomePage() {
       <section className="bg-brand-50">
         <div className="container-x grid grid-cols-2 gap-4 py-8 sm:grid-cols-4">
           {stats.map((st) => (
-            <div key={st.label} className="group rounded-2xl bg-white p-4 text-center shadow-sm transition-transform duration-200 hover:-translate-y-1">
-              <div className="text-2xl transition-transform duration-200 group-hover:scale-110">{st.icon}</div>
-              <div className="mt-1 text-xl font-extrabold text-brand-800 sm:text-2xl">{st.value}</div>
+            <div key={st.label} className="rounded-2xl bg-white p-5 text-center shadow-md ring-1 ring-neutral-100 transition-transform duration-200 hover:-translate-y-1">
+              <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-accent-500" />
+              <div className="text-xl font-extrabold text-brand-800 sm:text-2xl">{st.value}</div>
               <div className="mt-0.5 text-xs text-neutral-600 sm:text-sm">{st.label}</div>
             </div>
           ))}
@@ -116,15 +125,25 @@ export default async function HomePage() {
           {categories.length === 0 ? (
             <p className="col-span-full text-neutral-500">ยังไม่มีหมวดสินค้า</p>
           ) : (
-            categories.map((c) => (
+            categories.map((c, i) => (
               <Link
                 key={c.id}
                 href={`/products?cat=${c.slug}`}
-                className="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border border-neutral-200 bg-white p-6 text-center shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:border-brand-300 hover:shadow-md"
+                className="group relative flex aspect-[4/3] items-end overflow-hidden rounded-2xl shadow-md ring-1 ring-neutral-200 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl"
               >
-                <span className="absolute inset-x-0 top-0 h-1 scale-x-0 bg-brand-600 transition-transform duration-200 group-hover:scale-x-100" />
-                <span className="text-4xl transition-transform duration-200 group-hover:scale-110">{c.icon || '🔧'}</span>
-                <span className="font-semibold text-neutral-800 group-hover:text-brand-800">{c.name}</span>
+                <img
+                  src={c.image || CAT_IMG[i % CAT_IMG.length]}
+                  alt={c.name}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  loading="lazy"
+                  width={400}
+                  height={300}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-950/95 via-brand-900/45 to-brand-900/10" />
+                <div className="relative w-full p-4">
+                  <span className="text-lg font-bold text-white drop-shadow">{c.name}</span>
+                  <div className="mt-1 h-1 w-8 rounded-full bg-accent-500 transition-all duration-200 group-hover:w-16" />
+                </div>
               </Link>
             ))
           )}
@@ -153,11 +172,12 @@ export default async function HomePage() {
         <section className="container-x py-16">
           <SectionHeading title="ทำไมต้องเบิ้มอะไหล่ยนต์" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((f) => (
-              <div key={f.id} className="group rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-md">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-2xl transition-transform duration-200 group-hover:scale-110 group-hover:bg-brand-100">
-                  {f.icon || '✅'}
+            {features.map((f, i) => (
+              <div key={f.id} className="group rounded-2xl border border-neutral-200 bg-white p-6 shadow-md transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-800 text-lg font-extrabold text-white shadow transition-transform duration-200 group-hover:scale-110">
+                  {String(i + 1).padStart(2, '0')}
                 </div>
+                <div className="mt-3 h-0.5 w-8 rounded-full bg-accent-500" />
                 <h3 className="mt-3 font-bold text-neutral-800">{f.title}</h3>
                 <p className="mt-2 text-sm text-neutral-600">{f.description}</p>
               </div>
