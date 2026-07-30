@@ -1,12 +1,14 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CallBar from '@/components/CallBar';
+import TopBar from '@/components/TopBar';
 import { getSettings } from '@/lib/data';
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const s = await getSettings();
   return (
     <>
+      <TopBar s={s} />
       <Navbar shopName={s.shopName} logo={s.logoImage} phone={s.phone2 || s.phone} />
       <main className="min-h-[60vh] pb-20 md:pb-0">{children}</main>
       <Footer s={s} />

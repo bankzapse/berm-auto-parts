@@ -34,6 +34,13 @@ export default async function HomePage() {
   const heroImg = s.heroImage || IMG.hero;
   const aboutImg = s.heroImage || IMG.about;
 
+  // คำค้นหายอดนิยม (จาก SEO keywords หรือค่าเริ่มต้น) — สไตล์เว็บขายส่ง + ดี SEO
+  const kwFromSeo = (s.seoKeywords || '').split(',').map((k) => k.trim()).filter(Boolean);
+  const keywords = (kwFromSeo.length > 0 ? kwFromSeo : [
+    'น้ำมันเครื่อง', 'แบตเตอรี่', 'ยางรถยนต์', 'ผ้าเบรก', 'โช้คอัพ', 'ไดสตาร์ท',
+    'กรองอากาศ', 'สายพาน', 'ลูกหมาก', 'หลอดไฟ LED', 'อะไหล่ป่าซาง', 'อะไหล่ลำพูน',
+  ]).slice(0, 16);
+
   const stats = [
     { icon: '🔧', value: '1,000+', label: 'รายการอะไหล่' },
     { icon: '✅', value: 'แท้ & เทียบ', label: 'มีให้เลือกครบ' },
@@ -208,6 +215,24 @@ export default async function HomePage() {
           </div>
         </section>
       )}
+
+      {/* ===== คำค้นหายอดนิยม (สไตล์เว็บขายส่ง + SEO) ===== */}
+      <section className="border-t border-neutral-200 bg-white py-14">
+        <div className="container-x">
+          <SectionHeading title="ค้นหายอดนิยม" subtitle="อะไหล่ที่ลูกค้าถามหาบ่อย" />
+          <div className="flex flex-wrap justify-center gap-2.5">
+            {keywords.map((k) => (
+              <Link
+                key={k}
+                href="/products"
+                className="rounded-full border border-neutral-200 bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-700 transition-transform duration-150 hover:-translate-y-0.5 hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700"
+              >
+                {k}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ===== CTA โทร (รูปพื้นหลังน้ำมันเครื่อง) ===== */}
       <section className="relative overflow-hidden py-20 text-white">
