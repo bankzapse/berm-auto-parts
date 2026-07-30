@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthed } from '@/lib/session';
+import { checkLowStockAlert } from '@/lib/notify';
 
 // รับรายการเคลื่อนไหวสต็อก แล้วอัปเดตยอดคงเหลือแบบ transaction
 // body: { productId, type: 'IN'|'OUT'|'ADJUST', quantity, note?, unitCost?, refDoc? }
@@ -79,6 +80,9 @@ export async function POST(req: NextRequest) {
 
       return { movement, product: updated };
     });
+
+    // แจ้งเตือนสต็อกต่ำ (ถ้าเปิดใช้) — best-effort ไม่บล็อกผลลัพธ์หลัก
+    if (type === 'OUT' || type === 'ADJUST') await checkLowStockAlert([productId]);
 
     return NextResponse.json({ ok: true, ...result });
   } catch (e) {

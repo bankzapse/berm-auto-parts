@@ -42,10 +42,18 @@ export type DocData = {
   customerPhone: string;
   customerTaxId: string;
   note: string;
+  paymentMethod: string;
+  paidAmount: number;
   discount: number;
   vatRate: number;
   items: Item[];
 };
+
+const PAYMENT_METHODS = [
+  { value: 'cash', label: 'เงินสด' },
+  { value: 'transfer', label: 'โอนเงิน' },
+  { value: 'credit', label: 'เครดิต (ค้างชำระ)' },
+];
 
 export default function DocumentEditor({
   mode,
@@ -268,6 +276,21 @@ export default function DocumentEditor({
               <span className="label">ภาษีมูลค่าเพิ่ม VAT (%)</span>
               <input type="number" step="0.01" className="input" value={d.vatRate} onChange={(e) => set('vatRate', Number(e.target.value))} placeholder="0 = ไม่มี VAT, 7 = VAT 7%" />
             </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label>
+                <span className="label">วิธีชำระ</span>
+                <select className="input" value={d.paymentMethod} onChange={(e) => set('paymentMethod', e.target.value)}>
+                  {PAYMENT_METHODS.map((m) => (
+                    <option key={m.value} value={m.value}>{m.label}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span className="label">ยอดชำระแล้ว (บาท)</span>
+                <input type="number" step="0.01" className="input" value={d.paidAmount}
+                  onChange={(e) => set('paidAmount', Number(e.target.value))} />
+              </label>
+            </div>
             <label>
               <span className="label">หมายเหตุ</span>
               <textarea className="input min-h-20" value={d.note} onChange={(e) => set('note', e.target.value)} />
@@ -287,6 +310,10 @@ export default function DocumentEditor({
             <div className="mt-2 border-t border-neutral-300 pt-2">
               <Row label="ยอดสุทธิ" value={`฿${formatBaht(totals.total)}`} big />
             </div>
+            {d.paidAmount > 0 && <Row label="ชำระแล้ว" value={`฿${formatBaht(d.paidAmount)}`} />}
+            {totals.total - d.paidAmount > 0.01 && (
+              <Row label="ค้างชำระ" value={`฿${formatBaht(totals.total - d.paidAmount)}`} />
+            )}
           </div>
         </div>
 
@@ -339,7 +366,10 @@ function PrintView({
           </div>
         </div>
         <div className="text-right">
-          <div className="text-lg font-bold">{docTypeLabel(d.type)}</div>
+          <div className="text-lg font-bold">
+            {docTypeLabel(d.type)}
+            {totals.vatRate > 0 && d.type === 'RECEIPT' ? '/ใบกำกับภาษี' : ''}
+          </div>
           <div className="text-neutral-600">เลขที่: {d.docNumber}</div>
           <div className="text-neutral-600">
             วันที่: {d.issueDate ? new Date(d.issueDate).toLocaleDateString('th-TH', { dateStyle: 'medium' }) : '-'}
@@ -394,10 +424,17 @@ function PrintView({
           <div className="border-t border-neutral-800 pt-1">
             <Row label="ยอดสุทธิ" value={`฿${formatBaht(totals.total)}`} big />
           </div>
+          {d.paidAmount > 0 && <Row label="ชำระแล้ว" value={`฿${formatBaht(d.paidAmount)}`} />}
+          {totals.total - d.paidAmount > 0.01 && (
+            <Row label="ค้างชำระ" value={`฿${formatBaht(totals.total - d.paidAmount)}`} />
+          )}
         </div>
       </div>
 
-      {d.note ? <div className="mt-4 text-neutral-600">หมายเหตุ: {d.note}</div> : null}
+      <div className="mt-3 text-xs text-neutral-500">
+        วิธีชำระ: {PAYMENT_METHODS.find((m) => m.value === d.paymentMethod)?.label || d.paymentMethod}
+      </div>
+      {d.note ? <div className="mt-2 text-neutral-600">หมายเหตุ: {d.note}</div> : null}
 
       {/* ลายเซ็น */}
       <div className="mt-10 grid grid-cols-2 gap-8 text-center text-xs text-neutral-500">

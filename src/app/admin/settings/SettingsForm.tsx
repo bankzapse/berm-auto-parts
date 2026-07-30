@@ -9,6 +9,22 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
   const [f, setF] = useState<Settings>(initial);
   const [state, setState] = useState<SaveState>('idle');
   const [error, setError] = useState('');
+  const [testMsg, setTestMsg] = useState('');
+
+  async function testAlert() {
+    setTestMsg('กำลังส่ง…');
+    try {
+      const res = await fetch('/api/alert/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: f.alertWebhookUrl }),
+      });
+      const data = await res.json();
+      setTestMsg(res.ok && data.ok ? '✓ ส่งทดสอบสำเร็จ' : `✗ ${data.error || 'ส่งไม่สำเร็จ'}`);
+    } catch {
+      setTestMsg('✗ ส่งไม่สำเร็จ');
+    }
+  }
 
   const set = (k: keyof Settings) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setF((prev) => ({ ...prev, [k]: e.target.value }));
@@ -117,6 +133,25 @@ export default function SettingsForm({ initial }: { initial: Settings }) {
         <Field label="ข้อความท้ายเอกสาร">
           <input className="input" value={f.docFooter} onChange={set('docFooter')} />
         </Field>
+      </Section>
+
+      <Section title="แจ้งเตือนสต็อกต่ำ (Webhook)">
+        <label className="flex items-center gap-2 text-sm font-medium text-neutral-700">
+          <input
+            type="checkbox"
+            className="h-5 w-5"
+            checked={f.lowStockAlert}
+            onChange={(e) => setF((p) => ({ ...p, lowStockAlert: e.target.checked }))}
+          />
+          เปิดการแจ้งเตือนเมื่อสินค้าใกล้หมด/หมดสต็อก
+        </label>
+        <Field label="Webhook URL" hint="ใช้ได้กับ Make / Zapier / n8n / Discord ฯลฯ (เชื่อม LINE ผ่านบริการเหล่านี้ได้)">
+          <input className="input" value={f.alertWebhookUrl} onChange={set('alertWebhookUrl')} placeholder="https://..." />
+        </Field>
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={testAlert} className="btn-outline py-2 text-sm">ทดสอบส่งแจ้งเตือน</button>
+          {testMsg && <span className="text-sm text-neutral-600">{testMsg}</span>}
+        </div>
       </Section>
 
       <Section title="SEO">

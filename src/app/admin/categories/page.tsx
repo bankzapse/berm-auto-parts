@@ -19,14 +19,12 @@ export default async function AdminCategoriesPage() {
       <p className="mb-6 text-neutral-500">จัดหมวดอะไหล่ เช่น น้ำมันเครื่อง แบตเตอรี่ ยาง เบรก</p>
       <CollectionManager
         endpoint="/api/categories"
-        items={categories}
+        items={categories.map((it) => ({ ...it, __subtitle: `${it.icon || ''} /${it.slug}` }))}
         fields={fields}
         defaults={defaults}
         titleKey="name"
         imageKey="image"
         addLabel="เพิ่มหมวด"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subtitle={(it: any) => `${it.icon || ''} /${it.slug}`}
       />
     </div>
   );

@@ -25,6 +25,8 @@ export const DEFAULT_SETTINGS: Settings = {
   openHours: 'จันทร์–เสาร์ 08:00–18:00',
   taxId: '',
   docFooter: 'ขอบคุณที่ใช้บริการ เบิ้มอะไหล่ยนต์',
+  alertWebhookUrl: '',
+  lowStockAlert: true,
   heroImage: '',
   logoImage: '',
   seoTitle: 'เบิ้มอะไหล่ยนต์ | ร้านอะไหล่รถยนต์ มอเตอร์ไซค์ ป่าซาง ลำพูน',

@@ -19,14 +19,12 @@ export default async function AdminTeamPage() {
       <p className="mb-6 text-neutral-500">เพิ่มได้หลายคน — เจ้าของร้าน พนักงาน ช่าง</p>
       <CollectionManager
         endpoint="/api/team"
-        items={team}
+        items={team.map((it) => ({ ...it, __subtitle: it.role }))}
         fields={fields}
         defaults={defaults}
         titleKey="name"
         imageKey="image"
         addLabel="เพิ่มทีมงาน"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subtitle={(it: any) => it.role}
       />
     </div>
   );

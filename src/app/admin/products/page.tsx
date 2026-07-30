@@ -14,6 +14,10 @@ export default async function AdminProductsPage() {
     { key: 'cost', label: 'ต้นทุน (บาท)', type: 'price', hint: 'ใช้คำนวณกำไร (ไม่แสดงหน้าเว็บ)' },
     { key: 'priceLabel', label: 'หน่วย/หมายเหตุราคา', type: 'text', placeholder: 'เช่น /ชิ้น, เริ่มต้น' },
     { key: 'sku', label: 'รหัสสินค้า (SKU)', type: 'text', placeholder: 'ใช้กับสติกเกอร์/สต็อก' },
+    { key: 'barcode', label: 'บาร์โค้ด', type: 'text', placeholder: 'เลขบาร์โค้ด (สแกน/พิมพ์)' },
+    { key: 'oem', label: 'เลข OEM / รหัสเทียบ', type: 'text', placeholder: 'คั่นด้วย , เช่น 90915-YZZE1, C-111' },
+    { key: 'fitment', label: 'รุ่นรถที่ใช้ได้', type: 'text', placeholder: 'เช่น Isuzu D-Max 2012-2019; Toyota Vios' },
+    { key: 'location', label: 'ชั้นวาง/โซนเก็บ', type: 'text', placeholder: 'เช่น A-01, ชั้น 3' },
     { key: 'unit', label: 'หน่วยนับ', type: 'text', placeholder: 'ชิ้น / ลิตร / เส้น' },
     { key: 'lowStock', label: 'จุดเตือนสต็อกต่ำ', type: 'number', hint: 'เตือนเมื่อคงเหลือ ≤ ค่านี้' },
     { key: 'order', label: 'ลำดับการแสดง', type: 'number' },
@@ -31,6 +35,10 @@ export default async function AdminProductsPage() {
     cost: null,
     priceLabel: '',
     sku: '',
+    barcode: '',
+    oem: '',
+    fitment: '',
+    location: '',
     unit: 'ชิ้น',
     lowStock: 0,
     order: 0,
@@ -46,15 +54,14 @@ export default async function AdminProductsPage() {
       <p className="mb-6 text-neutral-500">เพิ่ม แก้ไข ลบ สินค้า พร้อมราคาและหมวด</p>
       <CollectionManager
         endpoint="/api/products"
-        items={products}
+        items={products.map((it) => ({
+          ...it,
+          __subtitle: `${catName(it.categoryId)} • ${it.price != null ? '฿' + it.price : 'สอบถามราคา'}${it.sku ? ' • ' + it.sku : ''}`,
+        }))}
         fields={fields}
         defaults={defaults}
         titleKey="name"
         addLabel="เพิ่มสินค้า"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subtitle={(it: any) =>
-          `${catName(it.categoryId)} • ${it.price != null ? '฿' + it.price : 'สอบถามราคา'}${it.sku ? ' • ' + it.sku : ''}`
-        }
       />
     </div>
   );

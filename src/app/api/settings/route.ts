@@ -8,7 +8,7 @@ const ALLOWED = [
   'phone', 'phone2', 'lineId', 'facebookUrl',
   'addressLine', 'subDistrict', 'district', 'province', 'postalCode',
   'latitude', 'longitude', 'mapEmbedUrl', 'openHours',
-  'taxId', 'docFooter',
+  'taxId', 'docFooter', 'alertWebhookUrl',
   'heroImage', 'logoImage',
   'seoTitle', 'seoDescription', 'seoKeywords', 'ogImage',
 ] as const;
@@ -34,6 +34,10 @@ export async function PUT(req: NextRequest) {
         data[key] = String(body[key] ?? '');
       }
     }
+  }
+  // ฟิลด์ boolean
+  if ('lowStockAlert' in body) {
+    data.lowStockAlert = body.lowStockAlert === true || body.lowStockAlert === 'true';
   }
 
   try {

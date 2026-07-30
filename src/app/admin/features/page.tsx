@@ -17,14 +17,12 @@ export default async function AdminFeaturesPage() {
       <p className="mb-6 text-neutral-500">จุดขายของร้านที่แสดงหน้าแรกและหน้าเกี่ยวกับเรา</p>
       <CollectionManager
         endpoint="/api/features"
-        items={features}
+        items={features.map((it) => ({ ...it, __subtitle: it.description }))}
         fields={fields}
         defaults={defaults}
         titleKey="title"
         imageKey="icon"
         addLabel="เพิ่มจุดเด่น"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subtitle={(it: any) => it.description}
       />
     </div>
   );

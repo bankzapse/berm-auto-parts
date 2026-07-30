@@ -9,6 +9,7 @@ export default async function StickersPage() {
     price: p.price,
     priceLabel: p.priceLabel,
     sku: p.sku,
+    barcode: p.barcode,
     brand: p.brand,
   }));
   return (

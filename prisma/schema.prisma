@@ -42,6 +42,10 @@ model Settings {
   taxId          String   @default("") // เลขประจำตัวผู้เสียภาษี
   docFooter      String   @default("ขอบคุณที่ใช้บริการ เบิ้มอะไหล่ยนต์")
 
+  // แจ้งเตือน (webhook — LINE Messaging / Discord / Make ฯลฯ)
+  alertWebhookUrl String  @default("")
+  lowStockAlert   Boolean @default(true)
+
   // จุดเด่น/สถิติ (แสดงหน้าแรก)
   heroImage      String   @default("")
   logoImage      String   @default("")
@@ -76,6 +80,10 @@ model Product {
   priceLabel  String    @default("") // เช่น "เริ่มต้น", "/ชิ้น"
   brand       String    @default("") // แท้ / เทียบ / ยี่ห้อ
   sku         String    @default("") // รหัสสินค้า (ใช้กับสติกเกอร์)
+  barcode     String    @default("") // บาร์โค้ด (สแกน/พิมพ์)
+  oem         String    @default("") // เลข OEM / รหัสเทียบ (คั่นด้วย ,)
+  fitment     String    @default("") // รุ่นรถที่ใช้ได้ เช่น "Isuzu D-Max 2012-2019"
+  location    String    @default("") // ชั้นวาง/โซนเก็บของ
   cost        Float?    // ต้นทุน (บาท) — สำหรับคำนวณกำไร
   image       String    @default("")
   inStock     Boolean   @default(true)
@@ -136,17 +144,21 @@ model Document {
   issueDate      DateTime       @default(now())
   dueDate        DateTime?
 
+  customer       Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customerId     String?
   customerName   String         @default("")
   customerAddress String        @default("")
   customerPhone  String         @default("")
   customerTaxId  String         @default("")
 
   note           String         @default("")
+  paymentMethod  String         @default("cash") // cash / transfer / credit
   discount       Float          @default(0)  // ส่วนลด (บาท)
   vatRate        Float          @default(0)  // อัตรา VAT % (0 = ไม่มี)
   subtotal       Float          @default(0)
   vatAmount      Float          @default(0)
   total          Float          @default(0)
+  paidAmount     Float          @default(0)  // ยอดที่ชำระแล้ว (ค้างชำระ = total - paidAmount)
   stockDeducted  Boolean        @default(false)
 
   items          DocumentItem[]
@@ -171,6 +183,90 @@ model DocumentItem {
   order       Int      @default(0)
 
   @@index([documentId])
+}
+
+// ===== ผู้ใช้งานระบบ + สิทธิ์ =====
+enum Role {
+  OWNER // เจ้าของ — เข้าได้ทุกอย่าง
+  STAFF // พนักงาน — ขาย/สต็อก/เอกสาร แต่แก้ตั้งค่า/ผู้ใช้/รายงานไม่ได้
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  salt         String
+  name         String   @default("")
+  role         Role     @default(STAFF)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+}
+
+// ===== ซัพพลายเออร์ + ใบสั่งซื้อ =====
+model Supplier {
+  id        String          @id @default(cuid())
+  name      String
+  contact   String          @default("")
+  phone     String          @default("")
+  address   String          @default("")
+  taxId     String          @default("")
+  note      String          @default("")
+  orders    PurchaseOrder[]
+  createdAt DateTime        @default(now())
+}
+
+enum POStatus {
+  DRAFT
+  ORDERED
+  RECEIVED
+  CANCELLED
+}
+
+model PurchaseOrder {
+  id         String              @id @default(cuid())
+  poNumber   String              @unique
+  supplier   Supplier?           @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  supplierId String?
+  status     POStatus            @default(DRAFT)
+  orderDate  DateTime            @default(now())
+  note       String              @default("")
+  total      Float               @default(0)
+  received   Boolean             @default(false)
+  items      PurchaseOrderItem[]
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  @@index([status])
+}
+
+model PurchaseOrderItem {
+  id          String        @id @default(cuid())
+  po          PurchaseOrder @relation(fields: [poId], references: [id], onDelete: Cascade)
+  poId        String
+  productId   String?
+  name        String
+  sku         String        @default("")
+  unit        String        @default("ชิ้น")
+  quantity    Float         @default(1)
+  unitCost    Float         @default(0)
+  amount      Float         @default(0)
+  order       Int           @default(0)
+
+  @@index([poId])
+}
+
+// ===== ลูกค้า =====
+model Customer {
+  id        String     @id @default(cuid())
+  name      String
+  phone     String     @default("")
+  address   String     @default("")
+  taxId     String     @default("")
+  note      String     @default("")
+  documents Document[]
+  createdAt DateTime   @default(now())
+
+  @@index([phone])
 }
 
 model GalleryImage {

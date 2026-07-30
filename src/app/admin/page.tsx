@@ -44,6 +44,20 @@ export default async function AdminDashboard() {
         </div>
       )}
 
+      {dbOk && (lowStock ?? 0) > 0 && (
+        <Link href="/admin/inventory" className="mb-6 block rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700 hover:bg-red-100">
+          🔴 มีสินค้าหมดสต็อก {lowStock} รายการ — กดเพื่อดู/รับของเข้า
+        </Link>
+      )}
+
+      <Link href="/admin/pos" className="mb-6 flex items-center justify-between rounded-2xl bg-brand-700 p-5 text-white transition-transform hover:-translate-y-0.5">
+        <div>
+          <div className="text-lg font-bold">🛒 เปิดหน้าขาย (POS)</div>
+          <div className="text-sm text-brand-100">สแกน/ค้นหาสินค้า คิดเงิน ออกใบเสร็จ ตัดสต็อกอัตโนมัติ</div>
+        </div>
+        <span className="text-2xl">→</span>
+      </Link>
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => (
           <Link key={c.href} href={c.href} className="card p-5 transition-transform hover:-translate-y-1">

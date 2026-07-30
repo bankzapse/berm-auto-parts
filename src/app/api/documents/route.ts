@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAuthed } from '@/lib/session';
 import { computeTotals, docPrefix, type DocTypeKey } from '@/lib/documents';
+import { checkLowStockAlert } from '@/lib/notify';
 
 export async function GET() {
   try {
@@ -65,11 +66,14 @@ export async function POST(req: NextRequest) {
           status: (String(body.status || 'ISSUED') as never),
           issueDate: body.issueDate ? new Date(String(body.issueDate)) : new Date(),
           dueDate: body.dueDate ? new Date(String(body.dueDate)) : null,
+          customerId: body.customerId ? String(body.customerId) : null,
           customerName: String(body.customerName || ''),
           customerAddress: String(body.customerAddress || ''),
           customerPhone: String(body.customerPhone || ''),
           customerTaxId: String(body.customerTaxId || ''),
           note: String(body.note || ''),
+          paymentMethod: String(body.paymentMethod || 'cash'),
+          paidAmount: Number(body.paidAmount) || 0,
           discount: totals.discount,
           vatRate: totals.vatRate,
           subtotal: totals.subtotal,
@@ -107,6 +111,12 @@ export async function POST(req: NextRequest) {
 
       return doc;
     });
+
+    // แจ้งเตือนสต็อกต่ำหลังตัดสต็อกจากการขาย
+    if (deductStock) {
+      const ids = totals.items.map((it) => it.productId).filter((x): x is string => !!x);
+      await checkLowStockAlert(ids);
+    }
 
     return NextResponse.json({ ok: true, item: created });
   } catch (e) {

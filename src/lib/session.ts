@@ -1,9 +1,17 @@
 import { cookies } from 'next/headers';
-import { SESSION_COOKIE, verifySessionToken } from './auth';
+import { SESSION_COOKIE, parseSessionToken, type Session } from './auth';
 
-// ตรวจสอบว่า request ปัจจุบันล็อกอินแล้วหรือไม่ (ใช้ใน server component / route handler)
-export async function isAuthed(): Promise<boolean> {
+export async function getSession(): Promise<Session | null> {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
-  return verifySessionToken(token);
+  return parseSessionToken(token);
+}
+
+export async function isAuthed(): Promise<boolean> {
+  return (await getSession()) !== null;
+}
+
+export async function isOwner(): Promise<boolean> {
+  const s = await getSession();
+  return s?.role === 'OWNER';
 }

@@ -1,6 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { barcodeDataUri } from '@/lib/barcode';
+import { qrDataUri } from '@/lib/qrcodeSvg';
 
 type SP = {
   id: string;
@@ -8,6 +10,7 @@ type SP = {
   price: number | null;
   priceLabel: string;
   sku: string;
+  barcode: string;
   brand: string;
 };
 
@@ -17,6 +20,7 @@ type Sticker = {
   price?: string;
   code?: string;
   note?: string;
+  codeValue?: string; // ค่าที่ใช้ทำบาร์โค้ด/QR
 };
 
 const FONTS = [
@@ -53,6 +57,7 @@ export default function StickerTool({
   const [showPrice, setShowPrice] = useState(true);
   const [showCode, setShowCode] = useState(true);
   const [align, setAlign] = useState<'center' | 'left'>('center');
+  const [codeType, setCodeType] = useState<'none' | 'barcode' | 'qr'>('none');
 
   // โหมดกำหนดเอง
   const [customTitle, setCustomTitle] = useState('');
@@ -84,6 +89,7 @@ export default function StickerTool({
         price: showPrice ? customPrice : undefined,
         code: showCode ? customCode : undefined,
         note: customNote || undefined,
+        codeValue: customCode || undefined,
       };
       return Array.from({ length: Math.max(1, Math.min(60, copies)) }, () => one);
     }
@@ -98,6 +104,7 @@ export default function StickerTool({
           price: showPrice ? priceText(p) : undefined,
           code: showCode ? p.sku : undefined,
           note: p.brand || undefined,
+          codeValue: p.barcode || p.sku || undefined,
         });
       }
     }
@@ -214,6 +221,14 @@ export default function StickerTool({
               <option value="left">ชิดซ้าย</option>
             </select>
           </label>
+          <label>
+            <span className="label">บาร์โค้ด / QR</span>
+            <select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}>
+              <option value="none">ไม่มี</option>
+              <option value="barcode">บาร์โค้ด (Code128)</option>
+              <option value="qr">QR code</option>
+            </select>
+          </label>
           <div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3">
             <Check label="ตัวหนา" checked={bold} onChange={setBold} />
             <Check label="มีขอบ" checked={border} onChange={setBorder} />
@@ -276,6 +291,25 @@ export default function StickerTool({
                 {st.note ? (
                   <div style={{ fontSize: `${dim.base * 0.7}px` }} className="truncate text-neutral-500">
                     {st.note}
+                  </div>
+                ) : null}
+                {codeType !== 'none' && st.codeValue ? (
+                  <div className="mt-0.5 flex justify-center">
+                    {codeType === 'barcode' ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={barcodeDataUri(st.codeValue, { height: dim.base * 2, moduleWidth: 1, showText: true })}
+                        alt={st.codeValue}
+                        style={{ maxWidth: '100%', height: `${dim.base * 2.2}px` }}
+                      />
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={qrDataUri(st.codeValue, { size: 80 })}
+                        alt={st.codeValue}
+                        style={{ height: `${dim.h * 0.4}mm`, width: `${dim.h * 0.4}mm` }}
+                      />
+                    )}
                   </div>
                 ) : null}
               </div>

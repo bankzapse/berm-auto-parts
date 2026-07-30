@@ -24,7 +24,6 @@ export default function CollectionManager({
   defaults,
   titleKey = 'name',
   imageKey = 'image',
-  subtitle,
   addLabel = 'เพิ่มรายการ',
 }: {
   endpoint: string;
@@ -33,7 +32,6 @@ export default function CollectionManager({
   defaults: Item;
   titleKey?: string;
   imageKey?: string;
-  subtitle?: (item: Item) => string;
   addLabel?: string;
 }) {
   const [items, setItems] = useState<Item[]>(initialItems);
@@ -126,8 +124,8 @@ export default function CollectionManager({
                 <div className="truncate font-medium text-neutral-800">
                   {item[titleKey] || '(ไม่มีชื่อ)'}
                 </div>
-                {subtitle ? (
-                  <div className="truncate text-sm text-neutral-500">{subtitle(item)}</div>
+                {item.__subtitle ? (
+                  <div className="truncate text-sm text-neutral-500">{item.__subtitle}</div>
                 ) : null}
               </div>
               <button onClick={() => startEdit(item)} className="rounded-lg px-3 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50">

@@ -16,14 +16,12 @@ export default async function AdminGalleryPage() {
       <p className="mb-6 text-neutral-500">รูปสินค้า บรรยากาศร้าน และผลงาน</p>
       <CollectionManager
         endpoint="/api/gallery"
-        items={gallery}
+        items={gallery.map((it) => ({ ...it, __subtitle: it.url }))}
         fields={fields}
         defaults={defaults}
         titleKey="caption"
         imageKey="url"
         addLabel="เพิ่มรูป"
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        subtitle={(it: any) => it.url}
       />
     </div>
   );

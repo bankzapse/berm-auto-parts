@@ -10,6 +10,10 @@ export const productConfig: CrudConfig = {
     priceLabel: 'string',
     brand: 'string',
     sku: 'string',
+    barcode: 'string',
+    oem: 'string',
+    fitment: 'string',
+    location: 'string',
     unit: 'string',
     lowStock: 'number',
     image: 'string',
@@ -56,6 +60,31 @@ export const teamConfig: CrudConfig = {
     order: 'number',
   },
   orderBy: { order: 'asc' },
+};
+
+export const supplierConfig: CrudConfig = {
+  model: 'supplier',
+  fields: {
+    name: 'string',
+    contact: 'string',
+    phone: 'string',
+    address: 'string',
+    taxId: 'string',
+    note: 'string',
+  },
+  orderBy: { name: 'asc' },
+};
+
+export const customerConfig: CrudConfig = {
+  model: 'customer',
+  fields: {
+    name: 'string',
+    phone: 'string',
+    address: 'string',
+    taxId: 'string',
+    note: 'string',
+  },
+  orderBy: { createdAt: 'desc' },
 };
 
 export const featureConfig: CrudConfig = {

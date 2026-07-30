@@ -15,6 +15,8 @@ export default async function NewDocumentPage() {
     customerPhone: '',
     customerTaxId: '',
     note: '',
+    paymentMethod: 'cash',
+    paidAmount: 0,
     discount: 0,
     vatRate: 0,
     items: [],

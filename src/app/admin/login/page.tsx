@@ -8,6 +8,7 @@ export default function LoginPage() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get('next') || '/admin';
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -20,7 +21,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'เข้าสู่ระบบไม่สำเร็จ');
@@ -43,6 +44,19 @@ export default function LoginPage() {
           <p className="text-sm text-neutral-500">เบิ้มอะไหล่ยนต์</p>
         </div>
 
+        <label className="label" htmlFor="username">
+          ชื่อผู้ใช้ <span className="font-normal text-neutral-400">(เว้นว่าง = เจ้าของร้าน)</span>
+        </label>
+        <input
+          id="username"
+          type="text"
+          className="input mb-3"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="ชื่อผู้ใช้พนักงาน"
+          autoComplete="username"
+        />
+
         <label className="label" htmlFor="password">
           รหัสผ่าน
         </label>
@@ -52,6 +66,7 @@ export default function LoginPage() {
           className="input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
           autoFocus
           required
         />
