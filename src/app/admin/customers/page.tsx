@@ -8,7 +8,8 @@ async function getData() {
     const [customers, outstanding] = await Promise.all([
       prisma.customer.findMany({ orderBy: { createdAt: 'desc' } }),
       prisma.document.findMany({
-        where: { type: 'INVOICE', status: { not: 'PAID' } },
+        // ค้างชำระ = เอกสารที่ยังไม่ปิดยอด (ใบวางบิล หรือ ใบเสร็จเครดิต) ไม่ว่าประเภทใด
+        where: { status: { notIn: ['PAID', 'CANCELLED'] } },
         orderBy: { issueDate: 'asc' },
       }),
     ]);

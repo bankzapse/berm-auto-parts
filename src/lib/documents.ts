@@ -34,8 +34,8 @@ export interface RawItem {
 }
 
 export function computeTotals(items: RawItem[], discount: number, vatRate: number) {
-  const cleanItems = items
-    .filter((it) => it.name && it.name.trim() !== '')
+  const cleanItems = (Array.isArray(items) ? items : [])
+    .filter((it) => it && typeof it.name === 'string' && it.name.trim() !== '')
     .map((it, i) => {
       const quantity = Number(it.quantity) || 0;
       const unitPrice = Number(it.unitPrice) || 0;

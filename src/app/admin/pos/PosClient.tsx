@@ -5,7 +5,7 @@ import { formatBaht } from '@/lib/documents';
 import { Spinner } from '@/components/admin/ui';
 import ThermalReceipt, { type ReceiptData } from '@/components/admin/ThermalReceipt';
 
-type P = { id: string; name: string; sku: string; barcode: string; price: number; unit: string; stock: number; category: string };
+type P = { id: string; name: string; sku: string; barcode: string; oem: string; fitment: string; price: number; unit: string; stock: number; category: string };
 type CartItem = { productId: string; name: string; sku: string; unit: string; price: number; qty: number; stock: number };
 type Shop = { shopName: string; address: string; phone: string; taxId: string; footer: string };
 
@@ -42,6 +42,8 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
           p.name.toLowerCase().includes(q) ||
           p.sku.toLowerCase().includes(q) ||
           p.barcode.toLowerCase().includes(q) ||
+          p.oem.toLowerCase().includes(q) ||
+          p.fitment.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q),
       )
       .slice(0, 30);
@@ -115,8 +117,9 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          // เครดิตที่ยังจ่ายไม่ครบ = ยังไม่ปิดยอด (ไปโผล่ในค้างชำระ)
           type: 'RECEIPT',
-          status: 'PAID',
+          status: payMethod === 'credit' && paid < total ? 'ISSUED' : 'PAID',
           customerName: customer,
           paymentMethod: payMethod,
           paidAmount,
@@ -129,6 +132,7 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'ขายไม่สำเร็จ');
       const doc = data.item;
+      // ใช้ยอดจากเอกสารที่เซิร์ฟเวอร์คำนวณ (ตรงกับที่บันทึกจริง)
       setReceipt({
         shopName: shop.shopName,
         address: shop.address,
@@ -136,13 +140,14 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
         taxId: shop.taxId,
         docNumber: doc.docNumber,
         dateText: new Date(doc.issueDate).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }),
-        items: cart.map((it) => ({ name: it.name, sku: it.sku, quantity: it.qty, unit: it.unit, unitPrice: it.price, amount: it.price * it.qty })),
-        subtotal,
-        discount: Number(discount) || 0,
-        vatRate: 0,
-        vatAmount: 0,
-        total,
-        paid: paidAmount,
+        items: cart.map((it) => ({ name: it.name, sku: it.sku, quantity: it.qty, unit: it.unit, unitPrice: it.price, amount: Math.round(it.price * it.qty * 100) / 100 })),
+        subtotal: doc.subtotal,
+        discount: doc.discount,
+        vatRate: doc.vatRate,
+        vatAmount: doc.vatAmount,
+        total: doc.total,
+        // เงินสด: แสดงยอดที่รับมาจริง (เพื่อโชว์เงินทอนให้สอดคล้อง)
+        paid: payMethod === 'cash' ? paid : paidAmount,
         change,
         paymentLabel: PAY.find((p) => p.value === payMethod)?.label || 'ชำระ',
         footer: shop.footer,
@@ -209,6 +214,7 @@ export default function PosClient({ products, shop }: { products: P[]; shop: Sho
                   <span className={`text-xs ${p.stock <= 0 ? 'text-red-500' : 'text-neutral-400'}`}>คงเหลือ {p.stock}</span>
                 </div>
                 {p.sku ? <div className="text-xs text-neutral-400">{p.sku}</div> : null}
+                {p.fitment ? <div className="truncate text-xs text-brand-500" title={p.fitment}>🚗 {p.fitment}</div> : null}
               </button>
             ))}
             {filtered.length === 0 && <p className="col-span-full p-6 text-center text-neutral-400">ไม่พบสินค้า</p>}

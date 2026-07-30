@@ -4,13 +4,6 @@ import { getSupabaseAdmin, getBucketName, ensureBucket } from '@/lib/supabase';
 
 export const runtime = 'nodejs';
 
-function extFromType(type: string): string {
-  if (type.includes('png')) return 'png';
-  if (type.includes('webp')) return 'webp';
-  if (type.includes('gif')) return 'gif';
-  return 'jpg';
-}
-
 // สร้างชื่อไฟล์แบบไม่ชนกัน โดยไม่ใช้ Math.random ที่อาจถูกจำกัด
 let counter = 0;
 function uniqueName(ext: string): string {
@@ -44,6 +37,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'ไม่พบไฟล์รูป' }, { status: 400 });
   }
 
+  // จำกัดชนิดไฟล์ (เฉพาะรูป) และขนาด (กัน DoS / ไฟล์อันตราย)
+  const ALLOWED_TYPES: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+    'image/gif': 'gif',
+  };
+  const safeType = (file.type || '').toLowerCase();
+  if (!ALLOWED_TYPES[safeType]) {
+    return NextResponse.json({ ok: false, error: 'อนุญาตเฉพาะไฟล์รูป (jpg/png/webp/gif)' }, { status: 400 });
+  }
+  const MAX_BYTES = 8 * 1024 * 1024; // 8MB
+  if (file.size > MAX_BYTES) {
+    return NextResponse.json({ ok: false, error: 'ไฟล์ใหญ่เกิน 8MB' }, { status: 400 });
+  }
+
   const bucket = getBucketName();
   try {
     await ensureBucket(supabase, bucket);
@@ -51,12 +60,12 @@ export async function POST(req: NextRequest) {
     // ถ้าสร้าง bucket ไม่ได้ ให้ลองอัปโหลดต่อ (อาจมี bucket อยู่แล้ว)
   }
 
-  const ext = extFromType(file.type || 'image/jpeg');
+  const ext = ALLOWED_TYPES[safeType];
   const path = `${new Date().getFullYear()}/${uniqueName(ext)}`;
   const buffer = Buffer.from(await file.arrayBuffer());
 
   const { error } = await supabase.storage.from(bucket).upload(path, buffer, {
-    contentType: file.type || 'image/jpeg',
+    contentType: safeType,
     upsert: false,
   });
 

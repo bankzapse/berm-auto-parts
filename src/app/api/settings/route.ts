@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { isAuthed } from '@/lib/session';
+import { isOwner } from '@/lib/session';
 
 // ฟิลด์ที่อนุญาตให้แก้ไข (กันการยัดฟิลด์แปลกปลอม)
 const ALLOWED = [
@@ -14,8 +14,8 @@ const ALLOWED = [
 ] as const;
 
 export async function PUT(req: NextRequest) {
-  if (!(await isAuthed())) {
-    return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
+  if (!(await isOwner())) {
+    return NextResponse.json({ ok: false, error: 'forbidden' }, { status: 403 });
   }
   let body: Record<string, unknown> = {};
   try {

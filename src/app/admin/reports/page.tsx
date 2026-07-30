@@ -6,6 +6,10 @@ import BackupButton from './BackupButton';
 function ymd(d: Date) {
   return d.toISOString().slice(0, 10);
 }
+// วันในเขตเวลาไทย (กันยอดช่วงเช้ามืดตกไปวันก่อนหน้าเพราะ UTC)
+function bkkYmd(d: Date) {
+  return d.toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
+}
 
 async function load(fromStr: string, toStr: string) {
   const from = new Date(fromStr + 'T00:00:00');
@@ -37,7 +41,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   const { docs, products, ok } = await load(from, to);
 
   const costMap = new Map(products.map((p) => [p.id, p.cost ?? 0]));
-  const todayStr = ymd(now);
+  const todayStr = bkkYmd(now);
 
   let totalSales = 0;
   let grossProfit = 0;
@@ -52,7 +56,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   for (const d of docs) {
     totalSales += d.total;
     byMethod[d.paymentMethod] = (byMethod[d.paymentMethod] || 0) + d.total;
-    const day = ymd(new Date(d.issueDate));
+    const day = bkkYmd(new Date(d.issueDate));
     byDay[day] = (byDay[day] || 0) + d.total;
     if (day === todayStr) {
       todayTotal += d.total;
@@ -69,6 +73,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
       cur.amount += it.amount;
       sellers.set(key, cur);
     }
+    // หักส่วนลดระดับบิลออกจากกำไรขั้นต้น (ให้สอดคล้องกับรายได้หลังส่วนลด)
+    grossProfit -= d.discount;
   }
 
   const topSellers = [...sellers.values()].sort((a, b) => b.qty - a.qty).slice(0, 10);

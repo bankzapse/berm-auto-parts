@@ -49,14 +49,27 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
   if (items.length === 0) return NextResponse.json({ ok: false, error: 'กรุณาเพิ่มรายการอย่างน้อย 1 รายการ' }, { status: 400 });
   const total = items.reduce((s, it) => s + it.amount, 0);
 
+  const validStatus = ['DRAFT', 'ORDERED', 'RECEIVED', 'CANCELLED'];
+  const status = String(body.status || 'DRAFT');
+  if (!validStatus.includes(status)) {
+    return NextResponse.json({ ok: false, error: 'สถานะไม่ถูกต้อง' }, { status: 400 });
+  }
+
   try {
+    const existing = await prisma.purchaseOrder.findUnique({ where: { id }, select: { received: true } });
+    if (!existing) return NextResponse.json({ ok: false, error: 'ไม่พบใบสั่งซื้อ' }, { status: 404 });
+    // ใบสั่งซื้อที่รับของแล้ว ห้ามแก้รายการ (กันสต็อกเพี้ยน)
+    if (existing.received) {
+      return NextResponse.json({ ok: false, error: 'ใบสั่งซื้อนี้รับของเข้าแล้ว แก้ไขไม่ได้' }, { status: 400 });
+    }
+
     const po = await prisma.$transaction(async (tx) => {
       await tx.purchaseOrderItem.deleteMany({ where: { poId: id } });
       return tx.purchaseOrder.update({
         where: { id },
         data: {
           supplierId: body.supplierId ? String(body.supplierId) : null,
-          status: (String(body.status || 'DRAFT') as never),
+          status: status as never,
           orderDate: body.orderDate ? new Date(String(body.orderDate)) : undefined,
           note: String(body.note || ''),
           total: Math.round(total * 100) / 100,
@@ -67,7 +80,8 @@ export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string 
     });
     return NextResponse.json({ ok: true, item: po });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'บันทึกไม่สำเร็จ' }, { status: 500 });
+    console.error('update PO failed:', e);
+    return NextResponse.json({ ok: false, error: 'บันทึกไม่สำเร็จ' }, { status: 500 });
   }
 }
 

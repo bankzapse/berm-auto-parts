@@ -8,6 +8,8 @@ export default async function PosPage() {
     name: p.name,
     sku: p.sku,
     barcode: p.barcode,
+    oem: p.oem,
+    fitment: p.fitment,
     price: p.price ?? 0,
     unit: p.unit,
     stock: p.stock,

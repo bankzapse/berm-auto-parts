@@ -10,7 +10,12 @@ export interface Session {
 }
 
 function getSecret(): string {
-  return process.env.AUTH_SECRET || 'dev-insecure-secret-change-me';
+  const s = process.env.AUTH_SECRET;
+  // fail closed — ห้าม fallback เป็นค่าคงที่ (จะทำให้ปลอม session ได้)
+  if (!s || s.length < 16) {
+    throw new Error('AUTH_SECRET is required (อย่างน้อย 16 ตัวอักษร) — ตั้งค่าใน .env / Vercel');
+  }
+  return s;
 }
 
 function toBase64Url(bytes: ArrayBuffer): string {

@@ -35,14 +35,19 @@ export async function GET() {
   }
 }
 
-async function nextPoNumber(): Promise<string> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function nextPoNumber(tx: any): Promise<string> {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
   const mm = String(now.getMonth() + 1).padStart(2, '0');
   const start = new Date(now.getFullYear(), now.getMonth(), 1);
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  const count = await prisma.purchaseOrder.count({ where: { createdAt: { gte: start, lt: end } } });
+  const count = await tx.purchaseOrder.count({ where: { createdAt: { gte: start, lt: end } } });
   return `PO${yy}${mm}-${String(count + 1).padStart(3, '0')}`;
+}
+
+function isUniqueError(e: unknown): boolean {
+  return typeof e === 'object' && e !== null && 'code' in e && (e as { code?: string }).code === 'P2002';
 }
 
 export async function POST(req: NextRequest) {
@@ -57,22 +62,40 @@ export async function POST(req: NextRequest) {
   if (items.length === 0) return NextResponse.json({ ok: false, error: 'กรุณาเพิ่มรายการอย่างน้อย 1 รายการ' }, { status: 400 });
   const total = items.reduce((s, it) => s + it.amount, 0);
 
+  const validStatus = ['DRAFT', 'ORDERED', 'RECEIVED', 'CANCELLED'];
+  const status = String(body.status || 'DRAFT');
+  if (!validStatus.includes(status)) {
+    return NextResponse.json({ ok: false, error: 'สถานะไม่ถูกต้อง' }, { status: 400 });
+  }
+
   try {
-    const poNumber = await nextPoNumber();
-    const po = await prisma.purchaseOrder.create({
-      data: {
-        poNumber,
-        supplierId: body.supplierId ? String(body.supplierId) : null,
-        status: (String(body.status || 'DRAFT') as never),
-        orderDate: body.orderDate ? new Date(String(body.orderDate)) : new Date(),
-        note: String(body.note || ''),
-        total: Math.round(total * 100) / 100,
-        items: { create: items },
-      },
-      include: { items: true, supplier: true },
-    });
+    let po;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      try {
+        po = await prisma.$transaction(async (tx) => {
+          const poNumber = await nextPoNumber(tx);
+          return tx.purchaseOrder.create({
+            data: {
+              poNumber,
+              supplierId: body.supplierId ? String(body.supplierId) : null,
+              status: status as never,
+              orderDate: body.orderDate ? new Date(String(body.orderDate)) : new Date(),
+              note: String(body.note || ''),
+              total: Math.round(total * 100) / 100,
+              items: { create: items },
+            },
+            include: { items: true, supplier: true },
+          });
+        });
+        break;
+      } catch (e) {
+        if (isUniqueError(e) && attempt < 3) continue; // เลขที่ชน → ลองใหม่
+        throw e;
+      }
+    }
     return NextResponse.json({ ok: true, item: po });
   } catch (e) {
-    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'สร้างไม่สำเร็จ' }, { status: 500 });
+    console.error('create PO failed:', e);
+    return NextResponse.json({ ok: false, error: 'สร้างไม่สำเร็จ' }, { status: 500 });
   }
 }

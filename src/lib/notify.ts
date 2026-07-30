@@ -1,8 +1,35 @@
 import { prisma } from './prisma';
 
+// กัน SSRF: อนุญาตเฉพาะ http(s) และบล็อกโฮสต์ภายใน/private
+function isSafeWebhookUrl(raw: string): boolean {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return false;
+  }
+  if (u.protocol !== 'https:' && u.protocol !== 'http:') return false;
+  const host = u.hostname.toLowerCase();
+  if (
+    host === 'localhost' ||
+    host === '0.0.0.0' ||
+    host === '::1' ||
+    host.endsWith('.local') ||
+    host.endsWith('.internal') ||
+    /^127\./.test(host) ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(host)
+  ) {
+    return false;
+  }
+  return true;
+}
+
 // ส่งข้อความไป webhook (รองรับ Make/Zapier/n8n/Discord ฯลฯ) — best-effort
 export async function sendWebhook(url: string, message: string): Promise<boolean> {
-  if (!url) return false;
+  if (!url || !isSafeWebhookUrl(url)) return false;
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 3500);
