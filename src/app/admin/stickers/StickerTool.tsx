@@ -119,7 +119,7 @@ export default function StickerTool({
         lines: customLines.filter((l) => l.text.trim() !== ''),
         codeValue: codeValueInput || undefined,
       };
-      return Array.from({ length: Math.max(1, Math.min(60, copies)) }, () => one);
+      return Array.from({ length: Math.max(1, Math.min(2000, copies)) }, () => one);
     }
     // จากสินค้า
     const out: Sticker[] = [];
@@ -191,7 +191,7 @@ export default function StickerTool({
               {codeType !== 'none' ? (
                 <label><span className="label">ค่าบาร์โค้ด / QR</span><input className="input" value={codeValueInput} onChange={(e) => setCodeValueInput(e.target.value)} placeholder="เช่น 8850123456789 หรือ BRK-FR" /></label>
               ) : null}
-              <label><span className="label">จำนวนดวงที่พิมพ์</span><NumberInput min={1} max={60} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} /></label></div></div>
+              <label><span className="label">จำนวนดวงที่พิมพ์</span><NumberInput min={1} max={2000} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} /></label></div></div>
         ) : (
           <div className="card p-5"><input
               className="input mb-3"
@@ -207,7 +207,7 @@ export default function StickerTool({
                         {p.sku || '—'} • {priceText(p) || 'ไม่มีราคา'}
                       </div></div><NumberInput
                       min={0}
-                      max={60}
+                      max={2000}
                       className="w-20 rounded-lg border border-neutral-300 px-2 py-1 text-sm"
                       value={selected[p.id] ?? 0}
                       emptyValue={0}
