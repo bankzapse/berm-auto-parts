@@ -145,6 +145,35 @@ export default function StickerTool({
       ? { w: Math.max(10, customW), h: Math.max(8, customH), base: Math.max(7, Math.round(Math.max(8, customH) * 0.35)) }
       : SIZES[size];
 
+  // พิมพ์แบบเปิดแท็บใหม่เฉพาะสติกเกอร์ (ทำงานบนมือถือ + คอม ไม่พึ่ง :has())
+  function printStickers() {
+    if (typeof window === 'undefined') return;
+    const area = document.querySelector('.print-area');
+    if (!area) {
+      window.print();
+      return;
+    }
+    const w = window.open('', '_blank');
+    if (!w) {
+      window.print(); // popup ถูกบล็อก → ใช้พิมพ์ปกติ
+      return;
+    }
+    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      .map((l) => `<link rel="stylesheet" href="${(l as HTMLLinkElement).href}">`)
+      .join('');
+    const styles = Array.from(document.querySelectorAll('style')).map((s) => s.outerHTML).join('');
+    const closeTag = '</scr' + 'ipt>';
+    w.document.write(
+      `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">` +
+        `<title>พิมพ์สติกเกอร์</title>${links}${styles}` +
+        `<style>@page{size:auto;margin:6mm}html,body{margin:0;padding:4mm;background:#fff}</style></head>` +
+        `<body>${area.innerHTML}` +
+        `<script>window.onload=function(){setTimeout(function(){try{window.focus();window.print();}catch(e){}},500)}${closeTag}` +
+        `</body></html>`,
+    );
+    w.document.close();
+  }
+
   return (
     <div className="space-y-6">
       {/* ==== ตัวเลือก (ไม่พิมพ์) ==== */}
@@ -243,7 +272,7 @@ export default function StickerTool({
               {[2, 3, 4, 5, 6].map((n) => (
                 <option key={n} value={n}>{n} คอลัมน์</option>
               ))}
-            </select></label><label><span className="label">การจัดวางข้อความ</span><select className="input" value={align} onChange={(e) => setAlign(e.target.value as 'center' | 'left')}><option value="center">กึ่งกลาง</option><option value="left">ชิดซ้าย</option></select></label><label><span className="label">บาร์โค้ด / QR</span><select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}><option value="none">ไม่มี</option><option value="barcode">บาร์โค้ด (Code128)</option><option value="qr">QR code</option></select></label><div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3"><Check label="ตัวหนา" checked={bold} onChange={setBold} /><Check label="มีขอบ" checked={border} onChange={setBorder} /><Check label="แสดงชื่อร้าน" checked={showShop} onChange={setShowShop} /><Check label="แสดงราคา" checked={showPrice} onChange={setShowPrice} /><Check label="แสดงรหัส" checked={showCode} onChange={setShowCode} /></div></div><div className="flex items-center gap-3"><button onClick={() => window.print()} className="btn-primary" disabled={stickers.length === 0}>
+            </select></label><label><span className="label">การจัดวางข้อความ</span><select className="input" value={align} onChange={(e) => setAlign(e.target.value as 'center' | 'left')}><option value="center">กึ่งกลาง</option><option value="left">ชิดซ้าย</option></select></label><label><span className="label">บาร์โค้ด / QR</span><select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}><option value="none">ไม่มี</option><option value="barcode">บาร์โค้ด (Code128)</option><option value="qr">QR code</option></select></label><div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3"><Check label="ตัวหนา" checked={bold} onChange={setBold} /><Check label="มีขอบ" checked={border} onChange={setBorder} /><Check label="แสดงชื่อร้าน" checked={showShop} onChange={setShowShop} /><Check label="แสดงราคา" checked={showPrice} onChange={setShowPrice} /><Check label="แสดงรหัส" checked={showCode} onChange={setShowCode} /></div></div><div className="flex items-center gap-3"><button onClick={printStickers} className="btn-primary" disabled={stickers.length === 0}>
              พิมพ์ ({stickers.length} ดวง)
           </button><span className="text-sm text-neutral-500">
             ตัวอย่างด้านล่างจะถูกพิมพ์ (ส่วนอื่นจะไม่ออกกระดาษ)
