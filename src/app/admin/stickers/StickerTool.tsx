@@ -147,6 +147,18 @@ export default function StickerTool({
       ? { w: Math.max(10, customW), h: Math.max(8, customH), base: Math.max(7, Math.round(Math.max(8, customH) * 0.35)) }
       : SIZES[size];
 
+  // คำนวณจำนวนที่ใส่ได้เต็มแผ่น A4 (210×297 มม.) ตามขนาด/ขอบ/ระยะห่างปัจจุบัน
+  const A4_W = 210;
+  const A4_H = 297;
+  const fitCols = Math.max(1, Math.floor((A4_W - 2 * pageMargin + gap) / (dim.w + gap)));
+  const fitRows = Math.max(1, Math.floor((A4_H - 2 * pageMargin + gap) / (dim.h + gap)));
+  const perSheet = fitCols * fitRows;
+
+  function fillA4() {
+    setColumns(fitCols);
+    if (mode === 'custom') setCopies(perSheet);
+  }
+
   // พิมพ์แบบเปิดแท็บใหม่เฉพาะสติกเกอร์ (ทำงานบนมือถือ + คอม ไม่พึ่ง :has())
   function printStickers() {
     if (typeof window === 'undefined') return;
@@ -270,7 +282,7 @@ export default function StickerTool({
               {FONTS.map((ff) => (
                 <option key={ff.value} value={ff.value}>{ff.label}</option>
               ))}
-            </select></label><label><span className="label">จำนวนคอลัมน์/แถว</span><NumberInput min={1} max={20} value={columns} emptyValue={5} onChange={(v) => setColumns(Math.max(1, v ?? 5))} /><span className="mt-1 block text-xs text-neutral-400">กำหนดเองได้ (1–20 ต่อแถว)</span></label><label><span className="label">การจัดวางข้อความ</span><select className="input" value={align} onChange={(e) => setAlign(e.target.value as 'center' | 'left')}><option value="center">กึ่งกลาง</option><option value="left">ชิดซ้าย</option></select></label><label><span className="label">ระยะขอบกระดาษ (มม.)</span><NumberInput min={0} max={30} value={pageMargin} emptyValue={5} onChange={(v) => setPageMargin(v ?? 5)} /><span className="mt-1 block text-xs text-neutral-400">0 = ชิดขอบกระดาษสุด</span></label><label><span className="label">ระยะห่างระหว่างดวง (มม.)</span><NumberInput min={0} max={20} value={gap} emptyValue={2} onChange={(v) => setGap(v ?? 2)} /></label><label><span className="label">บาร์โค้ด / QR</span><select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}><option value="none">ไม่มี</option><option value="barcode">บาร์โค้ด (Code128)</option><option value="qr">QR code</option></select></label><div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3"><Check label="ตัวหนา" checked={bold} onChange={setBold} /><Check label="มีขอบ" checked={border} onChange={setBorder} /><Check label="แสดงชื่อร้าน" checked={showShop} onChange={setShowShop} /><Check label="แสดงราคา" checked={showPrice} onChange={setShowPrice} /><Check label="แสดงรหัส" checked={showCode} onChange={setShowCode} /></div></div><div className="flex items-center gap-3"><button onClick={printStickers} className="btn-primary" disabled={stickers.length === 0}>
+            </select></label><label><span className="label">จำนวนคอลัมน์/แถว</span><NumberInput min={1} max={20} value={columns} emptyValue={5} onChange={(v) => setColumns(Math.max(1, v ?? 5))} /><span className="mt-1 block text-xs text-neutral-400">กำหนดเองได้ (1–20 ต่อแถว)</span></label><label><span className="label">การจัดวางข้อความ</span><select className="input" value={align} onChange={(e) => setAlign(e.target.value as 'center' | 'left')}><option value="center">กึ่งกลาง</option><option value="left">ชิดซ้าย</option></select></label><label><span className="label">ระยะขอบกระดาษ (มม.)</span><NumberInput min={0} max={30} value={pageMargin} emptyValue={5} onChange={(v) => setPageMargin(v ?? 5)} /><span className="mt-1 block text-xs text-neutral-400">0 = ชิดขอบกระดาษสุด</span></label><label><span className="label">ระยะห่างระหว่างดวง (มม.)</span><NumberInput min={0} max={20} value={gap} emptyValue={2} onChange={(v) => setGap(v ?? 2)} /></label><label><span className="label">บาร์โค้ด / QR</span><select className="input" value={codeType} onChange={(e) => setCodeType(e.target.value as 'none' | 'barcode' | 'qr')}><option value="none">ไม่มี</option><option value="barcode">บาร์โค้ด (Code128)</option><option value="qr">QR code</option></select></label><div className="rounded-xl border border-brand-200 bg-brand-50 p-3 sm:col-span-2 lg:col-span-3"><div className="flex flex-wrap items-center justify-between gap-3"><span className="text-sm text-brand-900">กระดาษ A4 (210×297 มม.): ขนาด {dim.w}×{dim.h} มม. ใส่ได้ประมาณ <b>{fitCols} คอลัมน์ × {fitRows} แถว = {perSheet} ดวง/แผ่น</b></span><button type="button" onClick={fillA4} className="btn-primary py-1.5 text-sm">จัดเต็มแผ่น A4</button></div><div className="mt-1 text-xs text-brand-700">แนะนำต่อแผ่น A4 (ขอบ 5 มม. ห่าง 2 มม.): เล็ก 45×25 ≈ 4 คอลัมน์ × 10 แถว (40 ดวง) · กลาง 60×35 ≈ 3×7 (21) · ใหญ่ 80×45 ≈ 2×6 (12)</div></div><div className="flex flex-wrap items-center gap-4 sm:col-span-2 lg:col-span-3"><Check label="ตัวหนา" checked={bold} onChange={setBold} /><Check label="มีขอบ" checked={border} onChange={setBorder} /><Check label="แสดงชื่อร้าน" checked={showShop} onChange={setShowShop} /><Check label="แสดงราคา" checked={showPrice} onChange={setShowPrice} /><Check label="แสดงรหัส" checked={showCode} onChange={setShowCode} /></div></div><div className="flex items-center gap-3"><button onClick={printStickers} className="btn-primary" disabled={stickers.length === 0}>
              พิมพ์ ({stickers.length} ดวง)
           </button><span className="text-sm text-neutral-500">
             ตัวอย่างด้านล่างจะถูกพิมพ์ (ส่วนอื่นจะไม่ออกกระดาษ)
