@@ -79,6 +79,21 @@ export default function StickerTool({
   const [codeValueInput, setCodeValueInput] = useState('');
   const [copies, setCopies] = useState(6);
 
+  // ชุดพิมพ์รวม — เก็บหลายดีไซน์เพื่อพิมพ์ในแผ่นเดียว (แต่ละดวงข้อความต่างกันได้)
+  const batchIdRef = useRef(1);
+  const [batch, setBatch] = useState<{ id: number; lines: Line[]; codeValue: string; copies: number }[]>([]);
+  function addToBatch() {
+    const lines = customLines.filter((l) => l.text.trim() !== '');
+    if (lines.length === 0) return;
+    setBatch((prev) => [
+      ...prev,
+      { id: batchIdRef.current++, lines: lines.map((l) => ({ ...l })), codeValue: codeValueInput, copies: Math.max(1, Math.min(2000, copies)) },
+    ]);
+  }
+  function removeFromBatch(id: number) {
+    setBatch((prev) => prev.filter((b) => b.id !== id));
+  }
+
   function addLine() {
     setCustomLines((prev) => [...prev, { id: lineIdRef.current++, text: '', size: 12, color: '#000000', bold: false }]);
   }
@@ -116,6 +131,16 @@ export default function StickerTool({
 
   const stickers: Sticker[] = useMemo(() => {
     if (mode === 'custom') {
+      // ถ้ามีชุดพิมพ์รวม → พิมพ์ทุกดีไซน์ในชุด (แต่ละดวงต่างกันได้)
+      if (batch.length > 0) {
+        const out: Sticker[] = [];
+        for (const b of batch) {
+          const one: Sticker = { shopName: showShop ? shopName : undefined, lines: b.lines, codeValue: b.codeValue || undefined };
+          const n = Math.max(1, Math.min(2000, b.copies));
+          for (let i = 0; i < n; i++) out.push(one);
+        }
+        return out;
+      }
       const one: Sticker = {
         shopName: showShop ? shopName : undefined,
         lines: customLines.filter((l) => l.text.trim() !== ''),
@@ -140,7 +165,7 @@ export default function StickerTool({
     }
     return out;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, products, selected, customLines, codeValueInput, copies, showShop, showPrice, showCode, shopName]);
+  }, [mode, products, selected, customLines, codeValueInput, copies, batch, showShop, showPrice, showCode, shopName]);
 
   const dim =
     size === 'custom'
@@ -234,7 +259,30 @@ export default function StickerTool({
               {codeType !== 'none' ? (
                 <label><span className="label">ค่าบาร์โค้ด / QR</span><input className="input" value={codeValueInput} onChange={(e) => setCodeValueInput(e.target.value)} placeholder="เช่น 8850123456789 หรือ BRK-FR" /></label>
               ) : null}
-              <label><span className="label">จำนวนดวงที่พิมพ์</span><NumberInput min={1} max={2000} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} /></label></div></div>
+              <label><span className="label">จำนวนดวงที่พิมพ์</span><NumberInput min={1} max={2000} value={copies} emptyValue={1} onChange={(v) => setCopies(v ?? 1)} /></label></div>
+
+            <div className="rounded-xl border border-brand-200 bg-brand-50 p-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-brand-900">ชุดพิมพ์รวม — หลายข้อความในแผ่นเดียว</span>
+                <button type="button" onClick={addToBatch} className="btn-primary py-1.5 text-sm">+ เพิ่มดีไซน์นี้เข้าชุด</button>
+              </div>
+              {batch.length === 0 ? (
+                <p className="mt-2 text-xs text-brand-700">
+                  ยังไม่มีในชุด — ตอนนี้จะพิมพ์ดีไซน์เดียว {copies} ดวง • อยากได้หลายข้อความต่างกันในแผ่นเดียว: ตั้งข้อความ+จำนวน → กด “เพิ่มดีไซน์นี้เข้าชุด” → เปลี่ยนข้อความ แล้วเพิ่มอีกได้เรื่อย ๆ
+                </p>
+              ) : (
+                <ul className="mt-2 space-y-1">
+                  {batch.map((b, i) => (
+                    <li key={b.id} className="flex items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm">
+                      <span className="min-w-0 flex-1 truncate">{i + 1}. {b.lines.map((l) => l.text).join(' / ') || '(ไม่มีข้อความ)'}</span>
+                      <span className="whitespace-nowrap text-xs text-neutral-500">{b.copies} ดวง</span>
+                      <button type="button" onClick={() => removeFromBatch(b.id)} className="text-red-500 hover:text-red-700">✕</button>
+                    </li>
+                  ))}
+                  <li className="pt-1 text-right text-xs font-semibold text-brand-800">รวมในชุด {batch.reduce((s, b) => s + b.copies, 0)} ดวง — กดพิมพ์เพื่อออกทั้งชุดในแผ่นเดียว</li>
+                </ul>
+              )}
+            </div></div>
         ) : (
           <div className="card p-5"><input
               className="input mb-3"
