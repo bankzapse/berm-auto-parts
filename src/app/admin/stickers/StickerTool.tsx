@@ -201,13 +201,18 @@ export default function StickerTool({
       .map((l) => `<link rel="stylesheet" href="${(l as HTMLLinkElement).href}">`)
       .join('');
     const styles = Array.from(document.querySelectorAll('style')).map((s) => s.outerHTML).join('');
+    // นำ class ของ <html> ไปด้วย (มี class ที่กำหนดตัวแปรฟอนต์ --font-thai ของ Sarabun)
+    // ไม่งั้น var(--font-thai) จะหาค่าไม่เจอ แล้วฟอนต์เพี้ยนเป็น Times New Roman (serif) ตอนพิมพ์
+    const htmlClass = (document.documentElement.className || '').replace(/"/g, '');
     const closeTag = '</scr' + 'ipt>';
     w.document.write(
-      `<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">` +
+      `<!doctype html><html lang="th" class="${htmlClass}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">` +
         `<title>พิมพ์สติกเกอร์</title>${links}${styles}` +
-        `<style>@page{size:auto;margin:${Math.max(0, pageMargin)}mm}html,body{margin:0;padding:0;background:#fff}body>div{gap:${Math.max(0, gap)}mm !important}</style></head>` +
+        `<style>html{--font-thai:'Sarabun','Tahoma',sans-serif}@page{size:auto;margin:${Math.max(0, pageMargin)}mm}html,body{margin:0;padding:0;background:#fff}body>div{gap:${Math.max(0, gap)}mm !important}</style></head>` +
         `<body>${area.innerHTML}` +
-        `<script>window.onload=function(){setTimeout(function(){try{window.focus();window.print();}catch(e){}},500)}${closeTag}` +
+        `<script>function go(){try{window.focus();window.print();}catch(e){}}` +
+        `window.onload=function(){var f=document.fonts&&document.fonts.ready;` +
+        `if(f&&f.then){f.then(function(){setTimeout(go,150)});setTimeout(go,1500);}else{setTimeout(go,500);}}${closeTag}` +
         `</body></html>`,
     );
     w.document.close();
